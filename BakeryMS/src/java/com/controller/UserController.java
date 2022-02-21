@@ -5,7 +5,7 @@
  */
 package com.controller;
 
-import com.models.ModelCasauser;
+import com.models.ModelJob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -32,8 +32,8 @@ public class UserController {
     @GET
     @Path("/listusers")
     @Produces({"application/json"})
-    public ArrayList<ModelCasauser> listUsers() throws Exception {
-        ArrayList<ModelCasauser> user_list = new ArrayList<>();
+    public ArrayList<ModelJob> listUsers() throws Exception {
+        ArrayList<ModelJob> user_list = new ArrayList<>();
 
         try {
             Statement state = com.connexion.Connexion.seconnecter().createStatement();
@@ -42,7 +42,7 @@ public class UserController {
 
             // creating users and setting attributes
             while (result.next()) {
-                ModelCasauser user = new ModelCasauser();
+                ModelJob user = new ModelJob();
                 user.setUserid(result.getInt("userid"));
                 user.setName(result.getString("name"));
                 user.setEmail(result.getString("email"));
@@ -71,7 +71,7 @@ public class UserController {
     @Path("/adduser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"application/json"})
-    public ModelCasauser createUser(@Valid ModelCasauser user) {
+    public ModelJob createUser(@Valid ModelJob user) {
         try {
             String sqlStatment= "Insert into casauser (name,email,phonenumber,login,password,dob,city,country,status) "+ "values (?,?,?,?,?,?,?,?,?)";
             System.out.println("Sql statement" + sqlStatment);
@@ -97,7 +97,7 @@ public class UserController {
     @Path("/casauser/{userid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"application/json"})
-    public ModelCasauser updateUser(@PathParam("userid") int userid, @Valid ModelCasauser user){
+    public ModelJob updateUser(@PathParam("userid") int userid, @Valid ModelJob user){
         try {
            String sqlStatment= "update casauser set name=?,email=?,phonenumber=?,login=?,password=?,dob=?,city=?,country=?,status=? where userid =" + userid;
             PreparedStatement pstmt = com.connexion.Connexion.seconnecter().prepareStatement(sqlStatment);
@@ -121,7 +121,7 @@ public class UserController {
     @Path("/upuserpass/{userid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"application/json"})
-    public ModelCasauser updateUserPswd(@PathParam("userid") int userid, @Valid ModelCasauser user){
+    public ModelJob updateUserPswd(@PathParam("userid") int userid, @Valid ModelJob user){
         try {
            String sqlStatment= "update casauser set name=?,email=?,phonenumber=?,login=?,password=?,dob=?,city=?,country=?,status=? where userid =" + userid;
             PreparedStatement pstmt = com.connexion.Connexion.seconnecter().prepareStatement(sqlStatment);
@@ -148,7 +148,7 @@ public class UserController {
 //    public int updateUserPass(@PathParam("userid") int userid, String password){
 //        int affectedrows = 0;
 //        try {
-//            ModelCasauser user = new ModelCasauser();
+//            ModelJob user = new ModelJob();
 //            user.setPassword(password);
 //            String sqlStatment= "update casauser set password=? where userid =" + userid;
 //            PreparedStatement pstmt = com.connexion.Connexion.seconnecter().prepareStatement(sqlStatment);
