@@ -93,7 +93,10 @@ public class ModelJob extends BaseModel {
         this.updatedat = updatedat;
     }
     
-    
+    public String test_str() {
+        return title + " " + description;
+    }
+
     @Override
     public JsonObject getJsonObject() {
         JsonObject json = Json.createObjectBuilder()

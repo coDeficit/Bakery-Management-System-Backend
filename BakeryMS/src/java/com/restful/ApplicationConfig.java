@@ -14,7 +14,7 @@ public class ApplicationConfig extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(com.controller.UserController.class);
+        resources.add(com.controller.JobController.class);
     }
     
 }
