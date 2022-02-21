@@ -2,34 +2,39 @@
 CREATE EXTENSION pgcrypto;
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Table structure for table 'app_meta'
+-- Table structure for table 'org_meta'
 --
-drop table if exists app_meta CASCADE;
-create table app_meta (
-   meta_key                 varchar(254)         not null,
-   value                    varchar(254)         not null,
-   constraint pk_app_meta primary key (meta_key)
+drop table if exists org_meta CASCADE;
+create table org_meta (
+   org_name             varchar(254)         not null,
+   phonenumber          varchar(254)         not null,
+   email                varchar(254)         null,
+   address1             varchar(254)         not null,
+   address2             varchar(254)         null,
+   city                 varchar(254)         not null,
+   state                varchar(254)         null,
+   zip                  varchar(254)         default '0000',
+   country              varchar(254)         not null,
+   timezone             varchar(254)         null,
+   website              varchar(254)         null,
+   image                bytea                null,
+   description          text                 null,
+   createdby            int4                 not null,
+   updatedby            int4                 null,
+   createdat            timestamp            default CURRENT_TIMESTAMP,
+   updatedat            timestamp            null,
+   constraint pk_org_name primary key (org_name)
 );
 
-create unique index app_meta_pk on app_meta (
-meta_key
+create unique index org_meta_pk on org_meta (
+   org_name
 );
 
 --
 -- Dumping data for table app_meta
 --
-insert into app_meta (meta_key, value) values
-   ('address', 'Nkolanga, Awae'),
-   ('city', 'Yaounde'),
-   ('country', 'Cameroon'),
-   ('business', 'Daily Bread BMS'),
-   ('email', 'fondempnkeng@gmail.com'),
-   ('fax', ''),
-   ('phoneCode', '237'),
-   ('phone', '652119430'),
-   ('timezone', 'Africa/Douala'),
-   ('website', ''),
-   ('logo', '');
+insert into org_name (org_name, phonenumber, email, address1, city, country, timezone) values
+   ('Daily Bread BMS', '652119430', 'dailybreadbkry@gmail.com', 'Nkolanga, Awae', 'Yaounde', 'Cameroon', 'Africa/Douala');
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -67,9 +72,7 @@ drop table if exists emptypes CASCADE;
 create table emptypes (
    emptypeid            serial                    not null,
    name                 varchar(254)              not null,
-   notes                text                      null,
-   createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat           timestamp            null,
+   notes                text                       null,
    constraint pk_emptype primary key (emptypeid)
 );
 
@@ -109,7 +112,7 @@ create table employees (
    state                varchar(254)         null,
    zip                  varchar(254)         default '0000',
    country              varchar(254)         not null,
-   salary               numeric              null,
+   salary               numeric(10, 0)       null,
    image                bytea                null,
    status               varchar(254)         default 'Current',
    notes                text                 null,
@@ -124,19 +127,12 @@ create unique index emp_phonenumber on employees (
    phonenumber
 );
 
-create  index association1_fk on employees (
-   jobid
-);
-
-create  index association2_fk on employees (
-   emptypeid
-);
-
 --
 -- Dumping data for table employees
 --
 insert into employees (jobid, emptypeid, firstname, lastname, gender, phonenumber, email, address1, address2, city, state, country, salary, createdby) values
    (2, 4, 'Jane', 'Doe', 'F', '655555555', 'fondempnkeng@gmail.com', 'Awae Escalier', '', 'Yaounde', 'Centre', 'Cameroon', 500000, 1);
+
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -159,10 +155,6 @@ create table shifts (
    createdat            timestamp            default CURRENT_TIMESTAMP,
    updatedat           timestamp            null,
    constraint pk_shift primary key (shiftid)
-);
-
-create unique index shift_pk on shifts (
-   shiftid
 );
 
 create  index association1_fk on shifts (
@@ -212,18 +204,14 @@ create table shift_breaks (
    breakid              int4                 not null,
    starttime            timestamp            null,
    endtime              timestamp            null,
-   createdby            int4                 not null,
-   updatedby            int4                 null,
-   createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
    constraint pk_shift_break primary key (shiftid, breakid)
 );
 
 --
 -- Dumping data for table shift_breaks
 --
-insert into shift_breaks(shiftid, breakid, starttime, endtime, createdby) values 
-   (1, 2, '2022-02-15 12:00:00.001', '2022-02-15 12:00:00.001', 1);
+insert into shift_breaks(shiftid, breakid, starttime, endtime) values 
+   (1, 2, '2022-02-15 12:00:00.001', '2022-02-15 12:00:00.001');
 
 
 
@@ -233,7 +221,6 @@ insert into shift_breaks(shiftid, breakid, starttime, endtime, createdby) values
 
 ---- Table structure for table roles
 --
-
 drop table if exists roles CASCADE;
 create table roles (
    roleid               serial               not null,
@@ -286,14 +273,6 @@ create unique index user_name on users (
    username
 );
 
-create  index association1_fk on users (
-   employeeid
-);
-
-create  index association2_fk on users (
-   roleid
-);
-
 --
 -- Dumping data for table users
 --
@@ -339,14 +318,6 @@ create unique index cust_fullname on customers (
    fullname
 );
 
-create  index association1_fk on customers (
-   createdby
-);
-
-create  index association2_fk on customers (
-   updatedby
-);
-
 --
 -- Dumping data for table customers
 --
@@ -365,7 +336,6 @@ create or replace view cust_items as select * from customers;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------  Added for Stock Management ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 --
 -- Table structure for table categories
@@ -427,7 +397,7 @@ create table items (
    name                 varchar(254)         not null,
    color_ref            varchar(16)          null,
    image                bytea                null,
-   cost_price           numeric(10, 0)       null,
+   cost_price           numeric(10, 0)       default 0.00,
    unit_price           numeric(10, 0)       not null,
    stock_volume         numeric(10,2)        default 0.00,
    current_vol          numeric(10,2)        default 0.00,
@@ -447,16 +417,11 @@ create unique index item_sku on items (
    sku
 );
 
-
 --
 -- Dumping data for table items
 --
 insert into items (name, unit_price, createdby) values
    ('Sugar balls', 100, 1);
-
---
--- View structure for table items
---
 
 
 -------------------------------------------------------------------------------------------------------------------
@@ -477,18 +442,145 @@ create table stock_control (
    constraint pk_stck_ctrl primary key (stck_ctrl_id)
 );
 
---
--- Dumping data for table stock_control
---
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------  Added for Sales Management ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --
--- View structure for table stock_control
+-- Table structure for table pay_methods
 --
+drop table if exists pay_methods CASCADE;
+create table pay_methods (
+   pay_method_id        int4                 not null,
+   name                 varchar(254)         not null,
+   provider             varchar(14)          null,
+   image                bytea                null,
+   description          text                 null,
+   constraint pk_pay_method primary key (pay_methodid)
+);
+
+create unique index pay_method_name on pay_methods (
+   name
+);
+
+--
+-- Dumping data for table pay_methods
+--
+insert into pay_methods(name) values 
+   ('Cash'),
+   ('MTN MOMO'),
+   ('Orange Money');
+
+
+-------------------------------------------------------------------------------------------------------------------
+-- Table structure for table order_states
+--
+drop table if exists order_states CASCADE;
+create table order_states (
+   state_code           varchar(254)         not null,
+   name                 varchar(254)         not null,
+   color                varchar(16)          null,
+   description          text                 null,
+   constraint pk_order_state primary key (state_code)
+);
+
+create unique index order_state_name on order_states (
+   name
+);
+
+--
+-- Dumping data for table order_states
+--
+insert into order_states(name) values 
+   ('PEND', 'Pending'),
+   ('CONFMD', 'Confirmed'),
+   ('PAID', 'Paid'),
+   ('CANCD', 'Cancelled');
+
+
+-------------------------------------------------------------------------------------------------------------------
+-- Table structure for table orders
+--
+drop table if exists orders CASCADE;
+create table orders (
+   orderid              int4                 not null,
+   customerid           int4                 null,
+   state_code           varchar(254)         not null,
+   quantity             numeric(10, 2)       null,
+   discount             numeric(10, 2)       null,
+   sub_total            numeric(10, 0)       null,
+   total_price          numeric(10, 0)       null,
+   notes                text                 null,
+   createdby            int4                 not null,
+   updatedby            int4                 null,
+   createdat            timestamp            default CURRENT_TIMESTAMP,
+   updatedat            timestamp            null,
+   constraint pk_order primary key (orderid)
+);
+
+
+-------------------------------------------------------------------------------------------------------------------
+-- Table structure for table order_items
+--
+drop table if exists order_items CASCADE;
+create table order_items (
+   orderid              int4                 not null,
+   itemid               int4                 not null,
+   quantity             numeric(10, 2)       null,
+   discount             numeric(10, 2)       default 0.00,
+   sub_total            numeric(10, 0)       null,
+   total_price          numeric(10, 0)       null,
+   createdat            timestamp            default CURRENT_TIMESTAMP,
+   updatedat            timestamp            null,
+   constraint pk_order_item primary key (orderid, itemid)
+);
+
+
+
+-------------------------------------------------------------------------------------------------------------------
+-- Table structure for table sales
+--
+drop table if exists sales CASCADE;
+create table sales (
+   saleid               int4                 not null,
+   orderid              int4                 not null,
+   pay_method_id        int4                 not null,
+   payment              numeric(10, 0)       not null,
+   change               numeric(10, 0)       null,
+   total_price          numeric(10, 0)       null,
+   status               varchar(254)         not null,
+   createdby            int4                 not null,
+   updatedby            int4                 null,
+   createdat            timestamp            default CURRENT_TIMESTAMP,
+   updatedat            timestamp            null,
+   constraint pk_sale primary key (saleid)
+);
+
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------  Added for Foreign Key Constraints ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+---- Foreign Key structure for table org_meta
+--
+alter table org_meta
+   add constraint fk_org_meta_assoc_employee foreign key (employeeid)
+      references employees (employeeid)
+      on delete CASCADE on update CASCADE;
+
+alter table org_meta
+   add constraint fk_org_meta_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table org_meta
+   add constraint fk_org_meta_assoc_user foreign key (updatedby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
 
 ---- Foreign Key structure for table employees
 --
@@ -504,6 +596,11 @@ alter table employees
       
 alter table employees
    add constraint fk_employee_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table org_meta
+   add constraint fk_employee_assoc_user foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
@@ -625,6 +722,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+---- Tigger structure for table org_meta
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON org_meta
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
 
 ---- Tigger structure for table jobs
 --
@@ -632,15 +735,6 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON jobs
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
-
-
----- Tigger structure for table emptypes
---
-CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON emptypes
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
 
 ---- Tigger structure for table employees
 --
@@ -662,14 +756,6 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 --
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON breaks
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
-
----- Tigger structure for table shift_breaks
---
-CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON shift_breaks
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
@@ -710,5 +796,29 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 --
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON stock_control
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+---- Tigger structure for table orders
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON orders
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+---- Tigger structure for table order_items
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON order_items
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+---- Tigger structure for table sales
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON sales
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
