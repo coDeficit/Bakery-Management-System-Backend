@@ -204,7 +204,7 @@ insert into breaks (name, visibile) values
    ('Dinner Break', TRUE);
 
 -------------------------------------------------------------------------------------------------------------------
--- Table structure for table breaks
+-- Table structure for table shift_breaks
 --
 drop table if exists shift_breaks CASCADE;
 create table shift_breaks (
@@ -220,7 +220,7 @@ create table shift_breaks (
 );
 
 --
--- Dumping data for table breaks
+-- Dumping data for table shift_breaks
 --
 insert into shift_breaks(shiftid, breakid, starttime, endtime, createdby) values 
    (1, 2, '2022-02-15 12:00:00.001', '2022-02-15 12:00:00.001', 1);
@@ -357,8 +357,133 @@ insert into customers (fullname, gender, email, createdby) values
 -- View structure for table customers
 --
 
-drop view if exists cust_prods CASCADE;
-create or replace view cust_prods as select * from customers;
+drop view if exists cust_items CASCADE;
+create or replace view cust_items as select * from customers;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------  Added for Stock Management ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--
+-- Table structure for table categories
+--
+drop table if exists categories CASCADE;
+create table categories (
+   categoryid           int4                 not null,
+   name                 varchar(254)         not null,
+   description          text                 null,
+   constraint pk_category primary key (categoryid)
+);
+
+create unique index cat_name on categories (
+   name
+);
+
+--
+-- Dumping data for table categories
+--
+insert into categories(name) values 
+   ('Pastries'),
+   ('Breads');
+
+
+-------------------------------------------------------------------------------------------------------------------
+---- Table structure for table units
+--
+drop table if exists units CASCADE;
+create table units (
+   unitid               int4                 not null,
+   code                 varchar(254)         default 'whole',
+   value                varchar(254)         default '',
+   constraint pk_unit primary key (unitid)
+);
+
+create unique index unit_code on units (
+   code
+);
+
+--
+-- Dumping data for table unit
+--
+insert into units (code, value) values 
+   ('whole', ''),
+   ('kilograms', 'kg'),
+   ('pounds', 'ib'),
+   ('inches', 'in');
+
+
+-------------------------------------------------------------------------------------------------------------------
+---- Table structure for table items
+--
+drop table if exists items CASCADE;
+create table items (
+   itemid               serial               not null,
+   -- supplierid           int4                 null,
+   categoryid           int4                 null,
+   unitid               int4                 default 1,
+   name                 varchar(254)         not null,
+   color_ref            varchar(16)          null,
+   image                bytea                null,
+   cost_price           numeric(10, 0)       null,
+   unit_price           numeric(10, 0)       not null,
+   stock_volume         numeric(10,2)        default 0.00,
+   current_vol          numeric(10,2)        default 0.00,
+   stock_level          numeric(10,2)        default 0.00,
+   sku                  varchar(14)          null,
+   description          text                 null,
+   visible              boolean              default TRUE,
+   available            boolean              default FALSE,
+   createdby            int4                 not null,
+   updatedby            int4                 null,
+   createdat            timestamp            default CURRENT_TIMESTAMP,
+   updatedat            timestamp            null,
+   constraint pk_item primary key (itemid)
+);
+
+create unique index item_sku on items (
+   sku
+);
+
+
+--
+-- Dumping data for table items
+--
+insert into items (name, unit_price, createdby) values
+   ('Sugar balls', 100, 1);
+
+--
+-- View structure for table items
+--
+
+
+-------------------------------------------------------------------------------------------------------------------
+---- Table structure for table stock_control
+--
+drop table if exists stock_control CASCADE;
+create table stock_control (
+   stck_ctrl_id         serial               not null,
+   itemid               int4                 not null,
+   transid              int4                 null,
+   old_volume           numeric(10,2)        null,
+   new_volume           numeric(10,2)        null,
+   reasons              text                 null,
+   createdby            int4                 not null,
+   updatedby            int4                 null,
+   createdat            timestamp            default CURRENT_TIMESTAMP,
+   updatedat            timestamp            null,
+   constraint pk_stck_ctrl primary key (stck_ctrl_id)
+);
+
+--
+-- Dumping data for table stock_control
+--
+
+--
+-- View structure for table stock_control
+--
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -445,6 +570,48 @@ alter table customers
       on delete CASCADE on update CASCADE;
 
 
+---- Foreign Key structure for table items
+--
+alter table items
+   add constraint fk_item_assoc_cat foreign key (categoryid)
+      references categories (categoryid)
+      on delete CASCADE on update CASCADE;
+
+alter table items
+   add constraint fk_item_assoc_unit foreign key (unitid)
+      references units (unitid)
+      on delete CASCADE on update CASCADE;
+
+alter table items
+   add constraint fk_item_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table items
+   add constraint fk_item_assoc_user foreign key (updatedby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+
+---- Foreign Key structure for table stock_control
+--
+
+alter table stock_control
+   add constraint fk_item_assoc_item foreign key (itemid)
+      references items (itemid)
+      on delete CASCADE on update CASCADE;
+
+alter table stock_control
+   add constraint fk_item_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table stock_control
+   add constraint fk_item_assoc_user foreign key (updatedby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------  Added for Automatic Data Date Management ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -527,5 +694,21 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 --
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON customers
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+---- Tigger structure for table items
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON items
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+---- Tigger structure for table stock_control
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON stock_control
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
