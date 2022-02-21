@@ -509,7 +509,7 @@ create table orders (
    customerid           int4                 null,
    state_code           varchar(254)         not null,
    quantity             numeric(10, 2)       null,
-   discount             numeric(10, 2)       null,
+   discount             numeric(10, 2)       default 0.00,
    sub_total            numeric(10, 0)       null,
    total_price          numeric(10, 0)       null,
    notes                text                 null,
@@ -599,7 +599,7 @@ alter table employees
       references users (userid)
       on delete CASCADE on update CASCADE;
 
-alter table org_meta
+alter table employees
    add constraint fk_employee_assoc_user foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
@@ -613,7 +613,12 @@ alter table shifts
       on delete CASCADE on update CASCADE;
 
 alter table shifts
-   add constraint fk_employee_assoc_user foreign key (createdby)
+   add constraint fk_shift_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table shifts
+   add constraint fk_shift_assoc_user foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
       
@@ -629,11 +634,6 @@ alter table shift_breaks
    add constraint fk_shift_break_assoc_break foreign key (breakid)
       references breaks (breakid)
       on delete CASCADE on update CASCADE;
-      
-alter table shift_breaks
-   add constraint fk_shift_break_assoc_user foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE; 
 
 
 ---- Foreign Key structure for table users
@@ -650,6 +650,11 @@ alter table users
       
 alter table users
    add constraint fk_user_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table users
+   add constraint fk_user_assoc_user foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
@@ -692,19 +697,64 @@ alter table items
 
 ---- Foreign Key structure for table stock_control
 --
-
 alter table stock_control
-   add constraint fk_item_assoc_item foreign key (itemid)
+   add constraint fk_stck_ctrl_assoc_item foreign key (itemid)
       references items (itemid)
       on delete CASCADE on update CASCADE;
 
 alter table stock_control
-   add constraint fk_item_assoc_user foreign key (createdby)
+   add constraint fk_stck_ctrl_assoc_user foreign key (createdby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
 alter table stock_control
-   add constraint fk_item_assoc_user foreign key (updatedby)
+   add constraint fk_stck_ctrl_assoc_user foreign key (updatedby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+
+---- Foreign Key structure for table orders
+--
+alter table orders
+   add constraint fk_order_assoc_customer foreign key (customerid)
+      references customers (customerid)
+      on delete CASCADE on update CASCADE;
+
+alter table orders
+   add constraint fk_order_assoc_state foreign key (state_code)
+      references order_states (state_code)
+      on delete CASCADE on update CASCADE;
+
+alter table orders
+   add constraint fk_order_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table orders
+   add constraint fk_order_assoc_user foreign key (updatedby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+
+---- Foreign Key structure for table sales
+--
+alter table sales
+   add constraint fk_sale_assoc_order foreign key (orderid)
+      references orders (orderid)
+      on delete CASCADE on update CASCADE;
+
+alter table sales
+   add constraint fk_sale_assoc_pay foreign key (pay_method_id)
+      references pay_methods (pay_method_id)
+      on delete CASCADE on update CASCADE;
+
+alter table sales
+   add constraint fk_sale_assoc_user foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table sales
+   add constraint fk_sale_assoc_user foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
