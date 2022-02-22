@@ -360,30 +360,6 @@ insert into categories(name) values
    ('Breads');
 
 
--------------------------------------------------------------------------------------------------------------------
----- Table structure for table units
---
-drop table if exists units CASCADE;
-create table units (
-   unitid               int4                 not null,
-   code                 varchar(254)         default 'whole',
-   value                varchar(254)         default '',
-   constraint pk_unit primary key (unitid)
-);
-
-create unique index unit_code on units (
-   code
-);
-
---
--- Dumping data for table unit
---
-insert into units (code, value) values 
-   ('whole', ''),
-   ('kilograms', 'kg'),
-   ('pounds', 'ib'),
-   ('inches', 'in');
-
 
 -------------------------------------------------------------------------------------------------------------------
 ---- Table structure for table items
@@ -393,15 +369,14 @@ create table items (
    itemid               serial               not null,
    -- supplierid           int4                 null,
    categoryid           int4                 null,
-   unitid               int4                 default 1,
    name                 varchar(254)         not null,
    color_ref            varchar(16)          null,
    image                bytea                null,
-   cost_price           numeric(10, 0)       default 0.00,
+   cost_price           numeric(10, 0)       default 0,
    unit_price           numeric(10, 0)       not null,
-   stock_volume         numeric(10,2)        default 0.00,
-   current_vol          numeric(10,2)        default 0.00,
-   stock_level          numeric(10,2)        default 0.00,
+   base_qty             numeric(10, 0)       default 0,
+   current_qty          numeric(10, 0)       default 0,
+   stock_level          numeric(10, 0)       default 0,
    sku                  varchar(14)          null,
    description          text                 null,
    visible              boolean              default TRUE,
@@ -431,9 +406,9 @@ drop table if exists stock_control CASCADE;
 create table stock_control (
    stck_ctrl_id         serial               not null,
    itemid               int4                 not null,
-   transid              int4                 null,
-   old_volume           numeric(10,2)        null,
-   new_volume           numeric(10,2)        null,
+   saleid               int4                 null,
+   old_qty              numeric(10, 0)       default 0,
+   new_qty              numeric(10, 0)       default 0,
    reasons              text                 null,
    createdby            int4                 not null,
    updatedby            int4                 null,
@@ -505,13 +480,9 @@ insert into order_states(name) values
 --
 drop table if exists orders CASCADE;
 create table orders (
-   orderid              int4                 not null,
+   orderid              serial               not null,
    customerid           int4                 null,
    state_code           varchar(254)         not null,
-   quantity             numeric(10, 2)       null,
-   discount             numeric(10, 2)       default 0.00,
-   sub_total            numeric(10, 0)       null,
-   total_price          numeric(10, 0)       null,
    notes                text                 null,
    createdby            int4                 not null,
    updatedby            int4                 null,
@@ -528,7 +499,7 @@ drop table if exists order_items CASCADE;
 create table order_items (
    orderid              int4                 not null,
    itemid               int4                 not null,
-   quantity             numeric(10, 2)       null,
+   quantity             numeric(10, 0)       default 0,
    discount             numeric(10, 2)       default 0.00,
    sub_total            numeric(10, 0)       null,
    total_price          numeric(10, 0)       null,
@@ -544,13 +515,12 @@ create table order_items (
 --
 drop table if exists sales CASCADE;
 create table sales (
-   saleid               int4                 not null,
+   saleid               serial               not null,
    orderid              int4                 not null,
    pay_method_id        int4                 not null,
    payment              numeric(10, 0)       not null,
    change               numeric(10, 0)       null,
-   total_price          numeric(10, 0)       null,
-   status               varchar(254)         not null,
+   notes                text                 null,
    createdby            int4                 not null,
    updatedby            int4                 null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
@@ -680,11 +650,6 @@ alter table items
       on delete CASCADE on update CASCADE;
 
 alter table items
-   add constraint fk_item_assoc_unit foreign key (unitid)
-      references units (unitid)
-      on delete CASCADE on update CASCADE;
-
-alter table items
    add constraint fk_item_assoc_user foreign key (createdby)
       references users (userid)
       on delete CASCADE on update CASCADE;
@@ -700,6 +665,11 @@ alter table items
 alter table stock_control
    add constraint fk_stck_ctrl_assoc_item foreign key (itemid)
       references items (itemid)
+      on delete CASCADE on update CASCADE;
+
+alter table stock_control
+   add constraint fk_stck_ctrl_assoc_sale foreign key (saleid)
+      references sales (saleid)
       on delete CASCADE on update CASCADE;
 
 alter table stock_control
