@@ -1,3 +1,6 @@
 /BakeryMS
 /Database/query-log.sql
 /Database/results-log.txt
+/BakeryBackend/nbproject/private/
+/BakeryBackend/build/
+/BakeryBackend/dist/
