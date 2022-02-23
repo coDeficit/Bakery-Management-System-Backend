@@ -1,9 +1,10 @@
+
 package com.controllers;
 
+import com.models.EmptypeModel;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import com.models.JobModel;
 import java.sql.SQLException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -16,13 +17,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/jobs")
-public class JobController extends SuperController {
 
-    public JobController() {
+@Path("/emptypes")
+public class EmptypeController extends SuperController {
+
+    public EmptypeController() {
     }
-
-    // return all jobs as json object
+    
+    // return all employment types as json object
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -33,12 +35,12 @@ public class JobController extends SuperController {
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM jobs");
+            resultSet = statement.executeQuery("SELECT * FROM emptypes");
 
             while (resultSet.next()) {
-                JobModel Job = new JobModel(resultSet);
-                System.out.println("Displaying Job instance: " + Job.__response());
-                json = Job.getJsonObject();
+                EmptypeModel emptype = new EmptypeModel(resultSet);
+                System.out.println("Displaying emptyp instance: " + emptype.__response());
+                json = emptype.getJsonObject();
                 builder.add(json);
             }
 
@@ -57,21 +59,21 @@ public class JobController extends SuperController {
 
     }
 
-    // return a single job as json object
+    // return a single employment type as json object
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long jobid) {
+    public Response getById(@PathParam("id") long emptypeid) {
         JsonObject json = null;
 
         try {
             setCreateStatement();
-            String query = "SELECT * from jobs WHERE jobid = " + jobid;
+            String query = "SELECT * from emptypes WHERE emptypeid = " + emptypeid;
             resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                JobModel Job = new JobModel(resultSet);
-                json = Job.getJsonObject();
+                EmptypeModel emptype = new EmptypeModel(resultSet);
+                json = emptype.getJsonObject();
             }
 
             close();
@@ -87,24 +89,24 @@ public class JobController extends SuperController {
         }
     }
 
-    // create a job and return json object
+    // create an employment type and return json object
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(JobModel model) throws SQLException {
+    public Response create(EmptypeModel model) throws SQLException {
 
         Response response = null;
 
-        setPreparedStatement("INSERT INTO jobs (title, description) VALUES (?,?)");
-        preparedStatement.setString(1, model.getTitle());
-        preparedStatement.setString(2, model.getDescription());
+        setPreparedStatement("INSERT INTO emptypes (name, notes) VALUES (?,?)");
+        preparedStatement.setString(1, model.getName());
+        preparedStatement.setString(2, model.getNotes());
         preparedStatement.executeUpdate();
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT last_value FROM " + JobModel.sequence_id);
+        resultSet = statement.executeQuery("SELECT last_value FROM " + EmptypeModel.sequence_id);
 
         while (resultSet.next()) {
-            int jobid = resultSet.getInt("last_value");
-            response = getById(jobid);
+            int emptypeid = resultSet.getInt("last_value");
+            response = getById(emptypeid);
         }
         resultSet.close();
         statement.close();
@@ -113,28 +115,28 @@ public class JobController extends SuperController {
         return response;
     }
 
-    // update a job and return json object
+    // update an employment type and return json object
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long jobid, JobModel model) throws SQLException {
+    public Response update(@PathParam("id") long emptypeid, EmptypeModel model) throws SQLException {
 
-        System.out.println("Calling JobController.update");
-        JobModel job = null;
+        System.out.println("Calling EmptypeController.update");
+        EmptypeModel emptype = null;
         Response response = null;
 
-        setPreparedStatement("UPDATE jobs SET title=?, description=? WHERE jobid = ?");
-        preparedStatement.setString(1, model.getTitle());
-        preparedStatement.setString(2, model.getDescription());
-        preparedStatement.setLong(3, jobid);
+        setPreparedStatement("UPDATE emptypes SET name=?, notes=? WHERE emptypeid = ?");
+        preparedStatement.setString(1, model.getName());
+        preparedStatement.setString(2, model.getNotes());
+        preparedStatement.setLong(3, emptypeid);
         preparedStatement.executeUpdate();
 
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
+        resultSet = statement.executeQuery("SELECT * FROM emptypes WHERE emptypeid = " + emptypeid);
 
         while (resultSet.next()) {
-            response = getById(jobid);
+            response = getById(emptypeid);
         }
 
         resultSet.close();
@@ -144,22 +146,22 @@ public class JobController extends SuperController {
         return response;
     }
 
-    // delete a job and return response
+    // delete an employment type and return response
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long jobid) {
+    public Response delete(@PathParam("id") long emptypeid) {
         JsonObject json = null;
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
+            resultSet = statement.executeQuery("SELECT * FROM emptypes WHERE emptypeid = " + emptypeid);
 
             while (resultSet.next()) {
-                JobModel job = new JobModel(resultSet);
-                json = job.getJsonObject();
+                EmptypeModel emptype = new EmptypeModel(resultSet);
+                json = emptype.getJsonObject();
             }
-            statement.execute("DELETE FROM jobs WHERE jobid = " + jobid);
+            statement.execute("DELETE FROM emptypes WHERE emptypeid = " + emptypeid);
             resultSet.close();
             statement.close();
         } catch (Exception e) {

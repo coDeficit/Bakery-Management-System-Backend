@@ -29,6 +29,7 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(com.controllers.EmptypeController.class);
         resources.add(com.controllers.JobController.class);
         resources.add(com.restful.GenericResource.class);
     }

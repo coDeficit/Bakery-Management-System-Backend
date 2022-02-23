@@ -73,7 +73,7 @@ drop table if exists emptypes CASCADE;
 create table emptypes (
    emptypeid            serial                    not null,
    name                 varchar(254)              not null,
-   notes                text                       null,
+   notes                text                      default '',
    constraint pk_emptype primary key (emptypeid)
 );
 
