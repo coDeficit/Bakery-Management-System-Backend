@@ -7,7 +7,7 @@ CREATE EXTENSION pgcrypto;
 drop table if exists org_meta CASCADE;
 create table org_meta (
    org_name             varchar(254)         not null,
-   phonenumber          varchar(254)         not null,
+   phone          varchar(254)         not null,
    email                varchar(254)         default '',
    address1             varchar(254)         not null,
    address2             varchar(254)         default '',
@@ -33,7 +33,7 @@ create unique index org_meta_pk on org_meta (
 --
 -- Dumping data for table app_meta
 --
-insert into org_name (org_name, phonenumber, email, address1, city, country, timezone) values
+insert into org_name (org_name, phone, email, address1, city, country, timezone) values
    ('Daily Bread BMS', '652119430', 'dailybreadbkry@gmail.com', 'Nkolanga, Awae', 'Yaounde', 'Cameroon', 'Africa/Douala');
 
 
@@ -102,37 +102,36 @@ create table employees (
    employeeid           serial               not null,
    jobid                int4                 not null,
    emptypeid            int4                 not null,
-   firstname            varchar(254)         not null,
-   lastname             varchar(254)         not null,
-   gender               varchar(1)           default null,
-   phonenumber          varchar(254)         not null,
-   email                varchar(254)         null,
+   fullname             varchar(254)         not null,
+   gender               varchar(1)           default '',
+   phone                varchar(254)         not null,
+   email                varchar(254)         default '',
    address1             varchar(254)         not null,
-   address2             varchar(254)         null,
+   address2             varchar(254)         default '',
    city                 varchar(254)         not null,
-   state                varchar(254)         null,
+   state                varchar(254)         default '',
    zip                  varchar(254)         default '0000',
    country              varchar(254)         not null,
-   salary               numeric(10, 0)       null,
-   image                bytea                null,
+   salary               numeric(10, 0)       default 0,
+   image                bytea                default '',
    status               varchar(254)         default 'Current',
-   notes                text                 null,
+   notes                text                 default '',
    createdby            int4                 not null,
-   updatedby            int4                 null,
+   updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_employee primary key (employeeid)
 );
 
-create unique index emp_phonenumber on employees (
-   phonenumber
+create unique index emp_phone on employees (
+   phone
 );
 
 --
 -- Dumping data for table employees
 --
-insert into employees (jobid, emptypeid, firstname, lastname, gender, phonenumber, email, address1, address2, city, state, country, salary, createdby) values
-   (2, 4, 'Jane', 'Doe', 'F', '655555555', 'fondempnkeng@gmail.com', 'Awae Escalier', '', 'Yaounde', 'Centre', 'Cameroon', 500000, 1);
+insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary, createdby, updatedby) values
+   (2, 4, 'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000, 1, 1);
 
 
 
@@ -226,12 +225,12 @@ drop table if exists roles CASCADE;
 create table roles (
    roleid               serial               not null,
    name                 varchar(254)         not null,
-   permissions          text                 null,
-   description          text                 default null,
+   permissions          text                 default '',
+   description          text                 default '',
    createdby            int4                 not null,
-   updatedby            int4                 null,
+   updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_role primary key (roleid)
 );
 
@@ -242,9 +241,9 @@ name
 --
 -- Dumping data for table roles
 --
-insert into roles (name, permissions, description, createdby) values 
-   ('Administrator', '', 'Has all rights', 1),
-   ('Manager', '', 'Manages all activities, prepares reports, e.t.c', 1 );
+insert into roles (name, description, createdby, updatedby) values 
+   ('Administrator', 'Has all rights', 1, 1),
+   ('Manager', 'Manages all Transactions, prepares reports,...', 1, 1 );
    --('Clerk', 'Performs daily cash handling, POS usage, stocking, handles inquiries and orders pertaining to the bakery', 1 ),
    --('Cashier', 'Receives on behalf of the bakery, issues receipt to customers, prepares financial report at the end of every working week and handles all financial transaction on behalf of the bakery', 1 ),
 --(4, 'Guest', '' );
@@ -261,12 +260,12 @@ create table users (
    roleid               int4                 not null,
    username             varchar(254)         not null,
    password             text                 not null,
-   status               varchar(254)         default 'Activated',
+   state                bool                 default TRUE,
    visible              boolean              default TRUE,
    createdby            int4                 not null,
-   updatedby            int4                 null,
+   updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_user primary key (userid)
 );
 
@@ -277,8 +276,8 @@ create unique index user_name on users (
 --
 -- Dumping data for table users
 --
-insert into users (employeeid, roleid, username, password, createdby) values
-  (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ), 1 );
+insert into users (employeeid, roleid, username, password, createdby, updatedby) values
+  (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ), 1, 1 );
 
 -- insert into users (employeeid, roleid, username, password, createdby) values
 --   (1, 2, 'Nguh', crypt('adminPass', gen_salt('bf', 8) ), 1 );
@@ -298,7 +297,7 @@ create table customers (
    customerid           serial               not null,
    fullname             varchar(254)         not null,
    gender               varchar(1)           default null,
-   phonenumber          varchar(254)         null,
+   phone          varchar(254)         null,
    email                varchar(254)         null,
    address1             varchar(254)         null,
    address2             varchar(254)         null,
@@ -620,12 +619,12 @@ alter table users
       on delete CASCADE on update CASCADE;
       
 alter table users
-   add constraint fk_user_assoc_user foreign key (createdby)
+   add constraint fk_user_assoc_creator foreign key (createdby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
 alter table users
-   add constraint fk_user_assoc_user foreign key (updatedby)
+   add constraint fk_user_assoc_modifier foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
