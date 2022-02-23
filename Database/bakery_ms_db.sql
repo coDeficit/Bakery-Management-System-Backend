@@ -8,21 +8,21 @@ drop table if exists org_meta CASCADE;
 create table org_meta (
    org_name             varchar(254)         not null,
    phonenumber          varchar(254)         not null,
-   email                varchar(254)         null,
+   email                varchar(254)         default '',
    address1             varchar(254)         not null,
-   address2             varchar(254)         null,
+   address2             varchar(254)         default '',
    city                 varchar(254)         not null,
-   state                varchar(254)         null,
+   state                varchar(254)         default '',
    zip                  varchar(254)         default '0000',
    country              varchar(254)         not null,
-   timezone             varchar(254)         null,
-   website              varchar(254)         null,
+   timezone             varchar(254)         default '',
+   website              varchar(254)         default '',
    image                bytea                null,
-   description          text                 null,
+   description          text                 default '',
    createdby            int4                 not null,
    updatedby            int4                 null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_org_name primary key (org_name)
 );
 
@@ -43,13 +43,13 @@ insert into org_name (org_name, phonenumber, email, address1, city, country, tim
 
 ---- Table structure for table jobs
 --
-drop table if exists jobs CASCADE;
+drop table if exists jobs;
 create table jobs (
    jobid                serial                    not null,
    title                varchar(254)              not null,
-   description          text                      null,
+   description          text                      default '',
    createdat            timestamp                 default CURRENT_TIMESTAMP,
-   updatedat            timestamp                 null,
+   updatedat            timestamp                 default CURRENT_TIMESTAMP,
    constraint pk_job primary key (jobid)
 );
 
@@ -63,6 +63,7 @@ create unique index job_title on jobs (
 insert into jobs (title, description) values
    ('Manager', 'Manages the day-in day-out activities of the Daily Bread Bakery'),
    ('IT Technician', 'Responsible for the technical aspects of the business and software');
+insert into jobs (title) values ('Cashier');
 
 
 -------------------------------------------------------------------------------------------------------------------

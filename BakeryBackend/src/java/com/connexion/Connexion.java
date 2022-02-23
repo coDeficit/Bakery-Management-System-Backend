@@ -10,7 +10,7 @@ import java.sql.DriverManager;
  */
 public class Connexion {
     private static Connection conex = null;
-    private String url = "jdbc:postgresql://localhost:5432/bakery_ms_db";
+    private String dburl = "jdbc:postgresql://localhost:5432/bakery_ms_db";
     private String username = "postgres";
     private String password = "uoiea54321";
 
@@ -22,13 +22,13 @@ public class Connexion {
         }
 
         try {
-            conex = DriverManager.getConnection(url, username, password);
+            conex = DriverManager.getConnection(dburl, username, password);
         } catch (Exception e) {
             System.out.println("Connection error : " + e.getMessage());
         }
     }
     
-    public static Connection seconnecter() {
+    public static Connection isConnected() {
         if (conex == null) {
             Connexion connexion = new Connexion();
         }
