@@ -11,7 +11,7 @@ import java.sql.Statement;
 public class SuperController {
     Statement statement;
     PreparedStatement preparedStatement;
-    ResultSet resultSet;
+    ResultSet resultSet = null;
     
     public void setPreparedStatement(String query) throws SQLException {
         this.preparedStatement = com.connexion.Connexion.isConnected().prepareStatement(query);

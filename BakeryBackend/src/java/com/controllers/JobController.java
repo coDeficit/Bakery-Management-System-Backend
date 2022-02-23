@@ -9,6 +9,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
@@ -27,7 +28,7 @@ public class JobController extends SuperController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
 
-        JsonObject json;
+        JsonObject json = null;
         JsonArrayBuilder builder = Json.createArrayBuilder();
 
         try {
@@ -48,7 +49,11 @@ public class JobController extends SuperController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json.toString()).build();
         }
 
-        return Response.status(Response.Status.OK).entity(builder.build().toString()).build();
+        if (json != null) {
+            return Response.status(Response.Status.OK).entity(builder.build().toString()).build();
+        } else {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
 
     }
 
@@ -84,7 +89,6 @@ public class JobController extends SuperController {
 
     // create a job and return json object
     @POST
-    @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(JobModel model) throws SQLException {
@@ -110,7 +114,7 @@ public class JobController extends SuperController {
         return response;
     }
 
-    // create a job and return json object
+    // update a job and return json object
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -139,6 +143,36 @@ public class JobController extends SuperController {
         preparedStatement.close();
 
         return response;
+    }
+
+    // delete a job and return response
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response delete(@PathParam("id") long jobid) {
+        JsonObject json = null;
+
+        try {
+            setCreateStatement();
+            resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
+
+            while (resultSet.next()) {
+                JobModel job = new JobModel(resultSet);
+                json = job.getJsonObject();
+            }
+            statement.execute("DELETE FROM jobs WHERE jobid = " + jobid);
+            resultSet.close();
+            statement.close();
+        } catch (Exception e) {
+            json = Json.createObjectBuilder().add("error", e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json.toString()).build();
+        }
+
+        if (json != null) {
+            return Response.status(Response.Status.OK).entity(json.toString()).build();
+        } else {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
     }
 
 }
