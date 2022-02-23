@@ -48,32 +48,5 @@ public class JobController extends SuperController{
         
         return Response.status(Response.Status.OK).entity(builder.build().toString()).build();
         
-        // ArrayList<JobModel> jobs = new ArrayList<>();
-
-        // try {
-        //     Statement state = com.connexion.Connexion.seconnecter().createStatement();
-        //     // ResultSet result = state.executeQuery("SELECT userid, name, email, phonenumber, login, pwd, dob, city, country, status, profile FROM casa_user");
-        //     ResultSet result = state.executeQuery("SELECT * FROM jobs");
-
-        //     // creating users and setting attributes
-        //     while (result.next()) {
-        //         JobModel job = new JobModel();
-        //         job.setJobid(result.getLong("jobid"));
-        //         job.setTitle(result.getString("title"));
-        //         job.setDescription(result.getString("description"));
-        //         job.setCreatedat(result.getTimestamp("createdat"));
-        //         job.setUpdatedat(result.getTimestamp("updatedat"));
-
-        //         System.out.println(job.getTitle());
-
-        //         job_list.add(job);
-        //     }
-        //     state.close();
-        //     result.close();
-        // } catch (Exception e) {
-        //     System.out.println("Error loading data : " + e.getMessage());
-        // }
-
-        // return job_list;
     }
 }
