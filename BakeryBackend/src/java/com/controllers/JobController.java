@@ -10,6 +10,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -20,12 +21,12 @@ public class JobController extends SuperController {
     public JobController() {
     }
 
-    //return all jobs as json object
+    // return all jobs as json object
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
-        
+
         JsonObject json;
         JsonArrayBuilder builder = Json.createArrayBuilder();
 
@@ -51,8 +52,7 @@ public class JobController extends SuperController {
 
     }
 
-    
-    //return a single job as json object
+    // return a single job as json object
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -82,30 +82,62 @@ public class JobController extends SuperController {
         }
     }
 
-
-    //create a job and return json object
+    // create a job and return json object
     @POST
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(JobModel model) throws SQLException {
-        
+
         Response response = null;
-        
+
         setPreparedStatement("INSERT INTO jobs (title, description) VALUES (?,?)");
         preparedStatement.setString(1, model.getTitle());
         preparedStatement.setString(2, model.getDescription());
         preparedStatement.executeUpdate();
         setCreateStatement();
         resultSet = statement.executeQuery("SELECT last_value FROM " + JobModel.sequence_id);
-        
+
         while (resultSet.next()) {
             int instance_id = resultSet.getInt("last_value");
             System.out.println("Instance id: " + instance_id);
             response = getSpecific(instance_id);
         }
-        close();
-        
+        resultSet.close();
+        statement.close();
+        preparedStatement.close();
+
+        return response;
+    }
+
+    // create a job and return json object
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response update(@PathParam("id") long jobid, JobModel model) throws SQLException {
+
+        System.out.println("Calling JobController.update");
+        JobModel job = null;
+        Response response = null;
+
+        setPreparedStatement("UPDATE jobs SET title=?, description=? WHERE jobid = ?");
+        preparedStatement.setString(1, model.getTitle());
+        preparedStatement.setString(2, model.getDescription());
+        preparedStatement.setLong(3, jobid);
+        preparedStatement.executeUpdate();
+
+        setCreateStatement();
+        resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
+
+        while (resultSet.next()) {
+            response = getSpecific(jobid);
+        }
+
+        resultSet.close();
+        statement.close();
+        preparedStatement.close();
+
         return response;
     }
 
