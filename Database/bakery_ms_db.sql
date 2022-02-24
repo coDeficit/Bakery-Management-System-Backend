@@ -103,7 +103,7 @@ create table employees (
    gender               char(1)              default '',
    phone                varchar(254)         not null,
    email                varchar(254)         default '',
-   employment_type      varchar(254)         default '',
+   employ_type          varchar(254)         default '',
    address1             varchar(254)         not null,
    address2             varchar(254)         default '',
    city                 varchar(254)         not null,
@@ -125,11 +125,11 @@ create unique index emp_phone on employees (
 --
 -- Dumping data for table employees
 --
-insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary) values
-   (2, 4, 'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000);
+insert into employees (jobid, fullname, gender, phone, email, address1, city, state, country, salary) values
+   (2,'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000);
 
-insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary) values
-   (2, 3, 'Jane Princess', 'F', '652119400', '', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 100000);
+insert into employees (jobid, fullname, gender, phone, email, address1, city, state, country, salary) values
+   (2,'Jane Princess', 'F', '652119400', '', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 100000);
 
 SELECT u.username, e.employeeid, r.roleid, c.userid, m.userid FROM users u 
 INNER JOIN employees e USING (employeeid) 
@@ -559,11 +559,6 @@ alter table employees
 alter table employees
    add constraint fk_employee_assoc_job foreign key (jobid)
       references jobs (jobid)
-      on delete CASCADE on update RESTRICT;
-
-alter table employees
-   add constraint fk_employee_assoc_emptype foreign key (emptypeid)
-      references emptypes (emptypeid)
       on delete CASCADE on update RESTRICT;
 
 

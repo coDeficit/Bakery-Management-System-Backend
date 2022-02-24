@@ -10,14 +10,13 @@ import javax.json.JsonObjectBuilder;
 
 public class EmployeeModel extends SuperModel {
     private JobModel jobModel = null;
-    private EmptypeModel emptypeModel = null;
     private long employeeid;
     private long jobid;
-    private long emptypeid;
     private String fullname;
     private String gender;
     private String phone;
     private String email;
+    private String employ_type;
     private String address1;
     private String address2;
     private String city;
@@ -31,17 +30,17 @@ public class EmployeeModel extends SuperModel {
     private Timestamp updatedat;
     public static final String sequence_id = "employees_employeeid_seq";
 
-    public EmployeeModel(long employeeid, long jobid, long emptypeid, String fullname, String gender,
-            String phone, String email, String address1, String address2, String city,
+    public EmployeeModel(long jobid, long emptypeid, String fullname, String gender,
+            String phone, String email, String employ_type, String address1, String address2, String city,
             String state, String country, long salary, String image, String status, 
             String notes, Timestamp createdat, Timestamp updatedat) {
         this.employeeid = employeeid;
         this.jobid = jobid;
-        this.emptypeid = emptypeid;
         this.fullname = fullname;
         this.gender = gender;
         this.phone = phone;
         this.email = email;
+        this.employ_type = employ_type;
         this.address1 = address1;
         this.address2 = address2;
         this.city = city;
@@ -55,15 +54,16 @@ public class EmployeeModel extends SuperModel {
         this.updatedat = updatedat;
     }
 
-    public EmployeeModel(long jobid, long emptypeid, String fullname, String gender, String phone,
-            String email, String address1, String address2, String city, String state,
-            String country, long salary, String image, String status, String notes) {
+    public EmployeeModel(long jobid, long emptypeid, String fullname, String gender,
+    String phone, String email, String employ_type, String address1, String address2, 
+    String city, String state, String country, long salary, String image, String status, 
+    String notes) {
         this.jobid = jobid;
-        this.emptypeid = emptypeid;
         this.fullname = fullname;
         this.gender = gender;
         this.phone = phone;
         this.email = email;
+        this.employ_type = employ_type;
         this.address1 = address1;
         this.address2 = address2;
         this.city = city;
@@ -78,11 +78,11 @@ public class EmployeeModel extends SuperModel {
     public EmployeeModel(ResultSet set) throws SQLException, Exception {
         this.employeeid = set.getLong("employeeid");
         this.jobid = set.getLong("jobid");
-        this.emptypeid = set.getLong("emptypeid");
         this.fullname = set.getString("fullname");
         this.gender = set.getString("gender");
         this.phone = set.getString("phone");
         this.email = set.getString("email");
+        this.employ_type = set.getString("employ_type");
         this.address1 = set.getString("address1");
         this.address2 = set.getString("address2");
         this.city = set.getString("city");
@@ -95,17 +95,16 @@ public class EmployeeModel extends SuperModel {
         this.createdat = set.getTimestamp("createdat");
         this.updatedat = set.getTimestamp("updatedat");
         this.jobModel = new JobModel(set);
-        this.emptypeModel = new EmptypeModel(set);
     }
 
     public EmployeeModel(ResultSet set, boolean withJob, boolean withType) throws SQLException, Exception {
         this.employeeid = set.getLong("employeeid");
         this.jobid = set.getLong("jobid");
-        this.emptypeid = set.getLong("emptypeid");
         this.fullname = set.getString("fullname");
         this.gender = set.getString("gender");
         this.phone = set.getString("phone");
         this.email = set.getString("email");
+        this.employ_type = set.getString("employ_type");
         this.address1 = set.getString("address1");
         this.address2 = set.getString("address2");
         this.city = set.getString("city");
@@ -121,9 +120,6 @@ public class EmployeeModel extends SuperModel {
         if (withJob) {
             this.jobModel = new JobModel(set);
         }
-        if (withType) {
-            this.emptypeModel = new EmptypeModel(set);
-        }
     }
 
     public EmployeeModel() {
@@ -136,11 +132,11 @@ public class EmployeeModel extends SuperModel {
         json = Json.createObjectBuilder()
                 .add("employeeid", employeeid)
                 .add("jobid", jobid)
-                .add("emptypeid", emptypeid)
                 .add("fullname", fullname)
                 .add("gender", gender)
                 .add("phone", phone)
                 .add("email", email)
+                .add("employ_type", employ_type)
                 .add("address1", address1)
                 .add("address2", address2)
                 .add("city", city)
@@ -156,9 +152,6 @@ public class EmployeeModel extends SuperModel {
         if (jobModel != null) {
             json.add("job_details", jobModel.getJsonObject());
         }
-        if (emptypeModel != null) {
-            json.add("emptype_details", emptypeModel.getJsonObject());
-        }
 
         return json.build();
     }
@@ -169,14 +162,6 @@ public class EmployeeModel extends SuperModel {
 
     public void setJobModel(JobModel jobModel) {
         this.jobModel = jobModel;
-    }
-
-    public EmptypeModel getEmptypeModel() {
-        return emptypeModel;
-    }
-
-    public void setEmptypeModel(EmptypeModel emptypeModel) {
-        this.emptypeModel = emptypeModel;
     }
 
     public long getEmployeeid() {
@@ -193,14 +178,6 @@ public class EmployeeModel extends SuperModel {
 
     public void setJobid(long jobid) {
         this.jobid = jobid;
-    }
-
-    public long getEmptypeid() {
-        return emptypeid;
-    }
-
-    public void setEmptypid(long emptypeid) {
-        this.emptypeid = emptypeid;
     }
 
     public String getFullname() {
@@ -320,6 +297,14 @@ public class EmployeeModel extends SuperModel {
 
     public void setUpdatedat(Timestamp updatedat) {
         this.updatedat = updatedat;
+    }
+
+    public String getEmploy_type() {
+        return employ_type;
+    }
+
+    public void setEmploy_type(String employ_type) {
+        this.employ_type = employ_type;
     }
 
 }

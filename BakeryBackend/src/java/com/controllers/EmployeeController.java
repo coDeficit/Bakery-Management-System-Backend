@@ -2,7 +2,6 @@ package com.controllers;
 
 import com.models.EmployeeModel;
 import com.models.JobModel;
-import com.models.EmptypeModel;
 import com.models.UserModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,9 +22,8 @@ import javax.ws.rs.core.Response;
 @Path("/employees")
 public class EmployeeController extends SuperController {
 
-    String getAllQuery = "SELECT e.*, j.*, t.* FROM employees e "
-            + "INNER JOIN jobs j USING (jobid) "
-            + "INNER JOIN emptypes t ON t.emptypeid = e.emptypeid ";
+    String getAllQuery = "SELECT e.*, j.* FROM employees e "
+            + "INNER JOIN jobs j USING (jobid) ";
 
     public EmployeeController() {
     }
@@ -105,19 +103,18 @@ public class EmployeeController extends SuperController {
     public Response create(EmployeeModel model) throws SQLException, Exception {
 
         Response response = null;
-        JsonObject json = null;
         
-        String query = "insert into employees (jobid, emptypeid, fullname, gender, phone, email, "
+        String query = "insert into employees (jobid, fullname, gender, phone, email, employ_type, "
                 + "address1, address2, city, state, country, salary, image, status, notes) "
                 + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         setPreparedStatement(query);
         preparedStatement.setLong(1, model.getJobid());
-        preparedStatement.setLong(2, model.getEmptypeid());
-        preparedStatement.setString(3, model.getFullname());
-        preparedStatement.setString(4, model.getGender());
-        preparedStatement.setString(5, model.getPhone());
-        preparedStatement.setString(6, model.getEmail());
+        preparedStatement.setString(2, model.getFullname());
+        preparedStatement.setString(3, model.getGender());
+        preparedStatement.setString(4, model.getPhone());
+        preparedStatement.setString(5, model.getEmail());
+        preparedStatement.setString(6, model.getEmploy_type());
         preparedStatement.setString(7, model.getAddress1());
         preparedStatement.setString(8, model.getAddress2());
         preparedStatement.setString(9, model.getCity());
@@ -132,32 +129,17 @@ public class EmployeeController extends SuperController {
 
         resultSet = statement.executeQuery("SELECT last_value FROM " + EmployeeModel.sequence_id);
         
+
         while (resultSet.next()) {
-                int instance_id = resultSet.getInt("last_value");
-                System.out.println("Instance id: " + instance_id);
-
-                try (ResultSet set = statement.executeQuery( getAllQuery + "WHERE e.employeeid=" + instance_id)) {
-                    while (set.next()) {
-                        EmployeeModel createdInstance = new EmployeeModel(set);
-                        json = createdInstance.getJsonObject();
-                    }
-                }
-            }
-
-//        while (resultSet.next()) {
-//            int employeeid = resultSet.getInt("last_value");
-//            response = getById(employeeid);
-//        }
+            int employeeid = resultSet.getInt("last_value");
+            response = getById(employeeid);
+        }
+        
         resultSet.close();
         statement.close();
         preparedStatement.close();
 
-//        return response;
-        if (json != null) {
-            return Response.status(Response.Status.OK).entity(json.toString()).build();
-        } else {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        }
+        return response;
     }
 
     // update an employee and return json object
@@ -172,19 +154,19 @@ public class EmployeeController extends SuperController {
         Response response = null;
         EmployeeController employeeController = new EmployeeController();
 
-        String query = "UPDATE employees SET jobid = ?, emptypeid = ?, fullname = ?, gender = ?, "
-                + "phone = ?, email = ?, address1 = ?, address2 = ?, city = ?, state = ?, "
-                + "country = ?, salary = ?, image = ?, status = ?, notes = ? "
-                + "WHERE employeeid = ?";
+        String query = "UPDATE employees SET jobid = ?, fullname = ?, gender = ?, "
+                + "phone = ?, email = ?, employ_type = ?, address1 = ?, address2 = ?, "
+                + "city = ?, state = ?, country = ?, salary = ?, image = ?, "
+                + "status = ?, notes = ? WHERE employeeid = ?";
 
         setPreparedStatement(query);
 
         preparedStatement.setLong(1, model.getJobid());
-        preparedStatement.setLong(2, model.getEmptypeid());
-        preparedStatement.setString(3, model.getFullname());
-        preparedStatement.setString(4, model.getGender());
-        preparedStatement.setString(5, model.getPhone());
-        preparedStatement.setString(6, model.getEmail());
+        preparedStatement.setString(2, model.getFullname());
+        preparedStatement.setString(3, model.getGender());
+        preparedStatement.setString(4, model.getPhone());
+        preparedStatement.setString(5, model.getEmail());
+        preparedStatement.setString(6, model.getEmploy_type());
         preparedStatement.setString(7, model.getAddress1());
         preparedStatement.setString(8, model.getAddress2());
         preparedStatement.setString(9, model.getCity());
