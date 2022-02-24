@@ -24,8 +24,8 @@ public class UserController extends SuperController {
     String getAllQuery = "SELECT u.*, e.*, r.*, c.*, m.* FROM users u "
             + "LEFT JOIN employees e USING (employeeid) "
             + "LEFT JOIN roles r USING (roleid) "
-            + "LEFT JOIN users c ON u.createdby = c.userid "
-            + "LEFT JOIN users m ON u.updatedby = m.userid ";
+            + "LEFT JOIN users c ON c.userid = u.createdby "
+            + "LEFT JOIN users m ON m.userid = u.updatedby ";
 
     public UserController() {
     }
@@ -48,7 +48,7 @@ public class UserController extends SuperController {
 
             while (resultSet.next()) {
                 UserModel user = new UserModel(resultSet);
-                System.out.println("Displaying emptyp instance: " + user.__response());
+                System.out.println("Displaying user instance: " + user.__response());
                 json = user.getJsonObject();
                 builder.add(json);
             }
@@ -105,11 +105,10 @@ public class UserController extends SuperController {
     public Response create(UserModel model) throws SQLException {
 
         Response response = null;
-        UserController userController = new UserController();
 
         String query = "insert into users (employeeid, roleid, username, password, "
                 + "state, createdby, updatedby) values "
-                + "(?, ?, ?, crypt(?, gen_salt('bf', 8) ), ?, ?)";
+                + "(?, ?, ?, crypt(?, gen_salt('bf', 8) ), ?, ?, ?)";
 
         setPreparedStatement(query);
         preparedStatement.setLong(1, model.getEmployeeid());
@@ -124,10 +123,28 @@ public class UserController extends SuperController {
 
         resultSet = statement.executeQuery("SELECT last_value FROM " + UserModel.sequence_id);
 
+//        while (resultSet.next()) {
+//            int instance_id = resultSet.getInt("last_value");
+//            System.out.println("Instance id: " + instance_id);
+//
+//            try (ResultSet set = statement.executeQuery("SELECT c.*, p.* FROM Mechanic c left join Person p ON c.person=p.person_id WHERE Mechanic_id=" + instance_id)) {
+//                while (set.next()) {
+//                    MechanicModel createdInstance = new MechanicModel(set, true);
+//                    System.out.println("Created instance: " + createdInstance.__str__());
+//                    json = createdInstance.getJsonObject();
+//                }
+//            }
+//        }
+
         while (resultSet.next()) {
             int userid = resultSet.getInt("last_value");
-            response = userController.getById(userid);
+            response = getById(userid);
         }
+        
+//        while (resultSet.next()) {
+//            int userid = resultSet.getInt("last_value");
+//            response = getById(userid);
+//        }
         resultSet.close();
         statement.close();
         preparedStatement.close();
@@ -164,10 +181,10 @@ public class UserController extends SuperController {
         setCreateStatement();
         resultSet = statement.executeQuery(getAllQuery + "WHERE u.userid = " + userid);
 
-        UserController userController = new UserController();
+        //UserController userController = new UserController();
 
         while (resultSet.next()) {
-            response = userController.getById(userid);
+            response = getById(userid);
             
         }
 

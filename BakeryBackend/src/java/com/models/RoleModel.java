@@ -8,9 +8,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 public class RoleModel extends SuperModel {
-
-    private UserModel creatorModel = null;
-    private UserModel modifierModel = null;
     private long roleid;
     private String name;
     private String permissions;
@@ -22,23 +19,19 @@ public class RoleModel extends SuperModel {
     public static final String sequence_id = "roles_roleid_seq";
 
     public RoleModel(long roleid, String name, String permissions,
-            String description, long createdby, long updatedby, Timestamp createdat, Timestamp updatedat) {
+            String description, Timestamp createdat, Timestamp updatedat) {
         this.roleid = roleid;
         this.name = name;
         this.permissions = permissions;
         this.description = description;
-        this.createdby = createdby;
-        this.updatedby = updatedby;
         this.createdat = createdat;
         this.updatedat = updatedat;
     }
 
-    public RoleModel(String name, String permissions, String description, long createdby, long updatedby) {
+    public RoleModel(String name, String permissions, String description) {
         this.name = name;
         this.permissions = permissions;
         this.description = description;
-        this.createdby = createdby;
-        this.updatedby = updatedby;
     }
 
     public RoleModel(ResultSet set) throws Exception {
@@ -46,30 +39,6 @@ public class RoleModel extends SuperModel {
         this.name = set.getString("name");
         this.permissions = set.getString("permissions");
         this.description = set.getString("description");
-        this.createdby = set.getLong("createdby");
-        this.updatedby = set.getLong("updatedby");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
-        this.creatorModel = new UserModel(set, false, false, false, false);
-        this.modifierModel = new UserModel(set, false, false, false, false);
-    }
-
-    public RoleModel(ResultSet set, boolean withCreator, boolean withModifier) throws Exception {
-        this.roleid = set.getLong("roleid");
-        this.name = set.getString("name");
-        this.permissions = set.getString("permissions");
-        this.description = set.getString("description");
-        this.createdby = set.getLong("createdby");
-        this.updatedby = set.getLong("updatedby");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
-
-        if (withCreator) {
-            this.creatorModel = new UserModel(set, true, true, true, true);
-        }
-        if (withModifier) {
-            this.modifierModel = new UserModel(set, true, true, true, true);
-        }
     }
 
     @Override
@@ -81,17 +50,8 @@ public class RoleModel extends SuperModel {
                 .add("name", name)
                 .add("permissions", permissions)
                 .add("description", description)
-                .add("createdby", createdby)
-                .add("updatedby", updatedby)
                 .add("createdat", createdat.toString())
                 .add("updatedat", updatedat.toString());
-
-        if (creatorModel != null) {
-            json.add("creator_details", creatorModel.getJsonObject());
-        }
-        if (modifierModel != null) {
-            json.add("modifier_details", modifierModel.getJsonObject());
-        }
 
         return json.build();
     }
@@ -131,22 +91,6 @@ public class RoleModel extends SuperModel {
         this.description = description;
     }
 
-    public long getCreatedby() {
-        return createdby;
-    }
-
-    public void setCreatedby(long createdby) {
-        this.createdby = createdby;
-    }
-
-    public long getUpdatedby() {
-        return updatedby;
-    }
-
-    public void setUpdatedby(long updatedby) {
-        this.updatedby = updatedby;
-    }
-
     public Timestamp getCreatedat() {
         return createdat;
     }
@@ -161,22 +105,6 @@ public class RoleModel extends SuperModel {
 
     public void setUpdatedat(Timestamp updatedat) {
         this.updatedat = updatedat;
-    }
-
-    public UserModel getCreatorModel() {
-        return creatorModel;
-    }
-
-    public void setCreatorModel(UserModel creatorModel) {
-        this.creatorModel = creatorModel;
-    }
-
-    public UserModel getModifierModel() {
-        return modifierModel;
-    }
-
-    public void setModifierModel(UserModel modifierModel) {
-        this.modifierModel = modifierModel;
     }
 
 }

@@ -12,8 +12,6 @@ import javax.json.JsonObjectBuilder;
 
 public class EmployeeModel extends SuperModel {
 
-    private UserModel creatorModel = null;
-    private UserModel modifierModel = null;
     private JobModel jobModel = null;
     private EmptypeModel emptypeModel = null;
     private long employeeid;
@@ -27,17 +25,38 @@ public class EmployeeModel extends SuperModel {
     private String address2;
     private String city;
     private String state;
-    private String zip;
     private String country;
     private long salary;
     private String image;
     private String status;
     private String notes;
-    private long createdby;
-    private long updatedby;
     private Timestamp createdat;
     private Timestamp updatedat;
     public static final String sequence_id = "employees_employeeid_seq";
+
+    public EmployeeModel(long employeeid, long jobid, long emptypeid, String fullname, String gender,
+            String phone, String email, String address1, String address2, String city,
+            String state, String country, long salary, String image, String status, 
+            String notes, Timestamp createdat, Timestamp updatedat) {
+        this.employeeid = employeeid;
+        this.jobid = jobid;
+        this.emptypeid = emptypeid;
+        this.fullname = fullname;
+        this.gender = gender;
+        this.phone = phone;
+        this.email = email;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.salary = salary;
+        this.image = image;
+        this.status = status;
+        this.notes = notes;
+        this.createdat = createdat;
+        this.updatedat = updatedat;
+    }
 
     public EmployeeModel(long jobid, long emptypeid, String fullname, String gender, String phone,
             String email, String address1, String address2, String city, String state, String zip,
@@ -53,14 +72,11 @@ public class EmployeeModel extends SuperModel {
         this.address2 = address2;
         this.city = city;
         this.state = state;
-        this.zip = zip;
         this.country = country;
         this.salary = salary;
         this.image = image;
         this.status = status;
         this.notes = notes;
-        this.createdby = createdby;
-        this.updatedby = updatedby;
         this.createdat = createdat;
         this.updatedat = updatedat;
     }
@@ -77,23 +93,18 @@ public class EmployeeModel extends SuperModel {
         this.address2 = set.getString("address2");
         this.city = set.getString("city");
         this.state = set.getString("state");
-        this.zip = set.getString("zip");
         this.country = set.getString("country");
         this.salary = set.getLong("salary");
         this.image = set.getString("image");
         this.status = set.getString("status");
         this.notes = set.getString("notes");
-        this.createdby = set.getLong("createdby");
-        this.updatedby = set.getLong("updatedby");
         this.createdat = set.getTimestamp("createdat");
         this.updatedat = set.getTimestamp("updatedat");
         this.jobModel = new JobModel(set);
-       this.emptypeModel = new EmptypeModel(set);
-       this.creatorModel = new UserModel(set, false, false, false, false);
-       this.modifierModel = new UserModel(set, false, false, false, false);
+        this.emptypeModel = new EmptypeModel(set);
     }
 
-    public EmployeeModel(ResultSet set, boolean withJob, boolean withType, boolean withCreator, boolean withModifier) throws SQLException, Exception {
+    public EmployeeModel(ResultSet set, boolean withJob, boolean withType) throws SQLException, Exception {
         this.employeeid = set.getLong("employeeid");
         this.jobid = set.getLong("jobid");
         this.emptypeid = set.getLong("emptypeid");
@@ -105,14 +116,11 @@ public class EmployeeModel extends SuperModel {
         this.address2 = set.getString("address2");
         this.city = set.getString("city");
         this.state = set.getString("state");
-        this.zip = set.getString("zip");
         this.country = set.getString("country");
         this.salary = set.getLong("salary");
         this.image = set.getString("image");
         this.status = set.getString("status");
         this.notes = set.getString("notes");
-        this.createdby = set.getLong("createdby");
-        this.updatedby = set.getLong("updatedby");
         this.createdat = set.getTimestamp("createdat");
         this.updatedat = set.getTimestamp("updatedat");
 
@@ -121,12 +129,6 @@ public class EmployeeModel extends SuperModel {
         }
         if (withType) {
             this.emptypeModel = new EmptypeModel(set);
-        }
-        if (withCreator) {
-            this.creatorModel = new UserModel(set, true, true, true, true);
-        }
-        if (withModifier) {
-            this.modifierModel = new UserModel(set, true, true, true, true);
         }
     }
 
@@ -149,14 +151,11 @@ public class EmployeeModel extends SuperModel {
                 .add("address2", address2)
                 .add("city", city)
                 .add("state", state)
-                .add("zip", zip)
                 .add("country", country)
                 .add("salary", salary)
                 .add("image", image)
                 .add("status", status)
                 .add("notes", notes)
-                .add("createdby", createdby)
-                .add("updatedby", updatedby)
                 .add("createdat", createdat.toString())
                 .add("updatedat", updatedat.toString());
 
@@ -166,30 +165,8 @@ public class EmployeeModel extends SuperModel {
         if (emptypeModel != null) {
             json.add("emptype_details", emptypeModel.getJsonObject());
         }
-        if (creatorModel != null) {
-            json.add("creator_details", creatorModel.getJsonObject());
-        }
-        if (modifierModel != null) {
-            json.add("modifier_details", modifierModel.getJsonObject());
-        }
 
         return json.build();
-    }
-
-    public UserModel getCreatorModel() {
-        return creatorModel;
-    }
-
-    public void setCreatorModel(UserModel creatorModel) {
-        this.creatorModel = creatorModel;
-    }
-
-    public UserModel getModifierModel() {
-        return modifierModel;
-    }
-
-    public void setModifierModel(UserModel modifierModel) {
-        this.modifierModel = modifierModel;
     }
 
     public JobModel getJobModel() {
@@ -296,14 +273,6 @@ public class EmployeeModel extends SuperModel {
         this.state = state;
     }
 
-    public String getZip() {
-        return zip;
-    }
-
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
     public String getCountry() {
         return country;
     }
@@ -343,23 +312,6 @@ public class EmployeeModel extends SuperModel {
     public void setNotes(String notes) {
         this.notes = notes;
     }
-
-    public long getCreatedby() {
-        return createdby;
-    }
-
-    public void setCreatedby(long createdby) {
-        this.createdby = createdby;
-    }
-
-    public long getUpdatedby() {
-        return updatedby;
-    }
-
-    public void setUpdatedby(long updatedby) {
-        this.updatedby = updatedby;
-    }
-
     public Timestamp getCreatedat() {
         return createdat;
     }

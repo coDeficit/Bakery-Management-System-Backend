@@ -168,6 +168,7 @@ public class EmployeeController extends SuperController {
          + "createdby = ?, updatedby = ? WHERE employeeid = ?";
          
          setPreparedStatement(query);
+         
          preparedStatement.setLong(1, model.getJobid());
          preparedStatement.setLong(2, model.getEmptypeid());
          preparedStatement.setString(3, model.getFullname());

@@ -7,7 +7,7 @@ CREATE EXTENSION pgcrypto;
 drop table if exists org_meta CASCADE;
 create table org_meta (
    org_name             varchar(254)         not null,
-   phone          varchar(254)         not null,
+   phone                varchar(254)         not null,
    email                varchar(254)         default '',
    address1             varchar(254)         not null,
    address2             varchar(254)         default '',
@@ -19,8 +19,6 @@ create table org_meta (
    website              varchar(254)         default '',
    image                bytea                null,
    description          text                 default '',
-   createdby            int4                 not null,
-   updatedby            int4                 null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
    updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_org_name primary key (org_name)
@@ -63,7 +61,7 @@ create unique index job_title on jobs (
 insert into jobs (title, description) values
    ('Manager', 'Manages the day-in day-out activities of the Daily Bread Bakery'),
    ('IT Technician', 'Responsible for the technical aspects of the business and software');
-insert into jobs (title) values ('Cashier');
+
 
 
 -------------------------------------------------------------------------------------------------------------------
@@ -110,14 +108,11 @@ create table employees (
    address2             varchar(254)         default '',
    city                 varchar(254)         not null,
    state                varchar(254)         default '',
-   zip                  varchar(254)         default '0000',
    country              varchar(254)         not null,
    salary               numeric(10, 0)       default 0,
    image                varchar(254)         default '',
    status               varchar(254)         default 'Current',
    notes                text                 default '',
-   createdby            int4                 not null,
-   updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
    updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_employee primary key (employeeid)
@@ -130,8 +125,14 @@ create unique index emp_phone on employees (
 --
 -- Dumping data for table employees
 --
-insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary, createdby, updatedby) values
-   (2, 4, 'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000, 1, 1);
+insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary) values
+   (2, 4, 'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000);
+
+SELECT u.username, e.employeeid, r.roleid, c.userid, m.userid FROM users u 
+INNER JOIN employees e USING (employeeid) 
+INNER JOIN roles r USING (roleid) 
+INNER JOIN users c ON c.userid = u.createdby 
+INNER JOIN users m ON m.userid = u.updatedby;
 
 
 
@@ -227,8 +228,6 @@ create table roles (
    name                 varchar(254)         not null,
    permissions          text                 default '',
    description          text                 default '',
-   createdby            int4                 not null,
-   updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
    updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_role primary key (roleid)
@@ -241,9 +240,9 @@ name
 --
 -- Dumping data for table roles
 --
-insert into roles (name, description, createdby, updatedby) values 
-   ('Administrator', 'Has all rights', 1, 1),
-   ('Manager', 'Manages all Transactions, prepares reports,...', 1, 1 );
+insert into roles (name, description) values 
+   ('Administrator', 'Has all rights'),
+   ('Manager', 'Manages all Transactions, prepares reports,...');
    --('Clerk', 'Performs daily cash handling, POS usage, stocking, handles inquiries and orders pertaining to the bakery', 1 ),
    --('Cashier', 'Receives on behalf of the bakery, issues receipt to customers, prepares financial report at the end of every working week and handles all financial transaction on behalf of the bakery', 1 ),
 --(4, 'Guest', '' );
@@ -261,8 +260,6 @@ create table users (
    username             varchar(254)         not null,
    password             text                 not null,
    state                boolean              default TRUE,
-   createdby            int4                 not null,
-   updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
    updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_user primary key (userid)
@@ -275,8 +272,8 @@ create unique index user_name on users (
 --
 -- Dumping data for table users
 --
-insert into users (employeeid, roleid, username, password, createdby, updatedby) values
-  (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ), 1, 1 );
+insert into users (employeeid, roleid, username, password) values
+  (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ));
 
 select u.userid, u.username, r.name, e.fullname, c.username creator, (select em.fullname creator_fname from users c
    inner join employees em using (employeeid)), 
@@ -547,16 +544,6 @@ alter table org_meta
       references employees (employeeid)
       on delete CASCADE on update CASCADE;
 
-alter table org_meta
-   add constraint fk_org_meta_assoc_user foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-alter table org_meta
-   add constraint fk_org_meta_assoc_user foreign key (updatedby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
 
 ---- Foreign Key structure for table employees
 --
@@ -569,16 +556,6 @@ alter table employees
    add constraint fk_employee_assoc_emptype foreign key (emptypeid)
       references emptypes (emptypeid)
       on delete CASCADE on update CASCADE;
-      
-alter table employees
-   add constraint fk_employee_assoc_creator foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-alter table employees
-   add constraint fk_employee_assoc_modifier foreign key (updatedby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
 
 
 ---- Foreign Key structure for table shifts
@@ -586,16 +563,6 @@ alter table employees
 alter table shifts
    add constraint fk_shift_assoc_employee foreign key (employeeid)
       references employees (employeeid)
-      on delete CASCADE on update CASCADE;
-
-alter table shifts
-   add constraint fk_shift_assoc_creator foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-alter table shifts
-   add constraint fk_shift_assoc_modifier foreign key (updatedby)
-      references users (userid)
       on delete CASCADE on update CASCADE;
       
 
@@ -612,19 +579,6 @@ alter table shift_breaks
       on delete CASCADE on update CASCADE;
 
 
----- Foreign Key structure for table roles
---
-alter table roles
-   add constraint fk_role_assoc_creator foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-alter table roles
-   add constraint fk_role_assoc_modifier foreign key (updatedby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-
 ---- Foreign Key structure for table users
 --
 alter table users
@@ -635,29 +589,6 @@ alter table users
 alter table users
    add constraint fk_user_assoc_role foreign key (roleid)
       references roles (roleid)
-      on delete CASCADE on update CASCADE;
-      
-alter table users
-   add constraint fk_user_assoc_creator foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-alter table users
-   add constraint fk_user_assoc_modifier foreign key (updatedby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-
----- Foreign Key structure for table customers
---
-alter table customers
-   add constraint fk_cust_assoc_user foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update CASCADE;
-
-alter table customers
-   add constraint fk_cust_assoc_user foreign key (updatedby)
-      references users (userid)
       on delete CASCADE on update CASCADE;
 
 
