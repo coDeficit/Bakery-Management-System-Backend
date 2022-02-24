@@ -63,34 +63,6 @@ insert into jobs (title, description) values
    ('IT Technician', 'Responsible for the technical aspects of the business and software');
 
 
-
--------------------------------------------------------------------------------------------------------------------
--- Table structure for table emptypes
---
--- drop table if exists emptypes CASCADE;
--- create table emptypes (
---    emptypeid            serial                    not null,
---    name                 varchar(254)              not null,
---    notes                text                      default '',
---    constraint pk_emptype primary key (emptypeid)
--- );
-
--- create unique index emptype_title on emptypes (
---    name
--- );
-
--- --
--- -- Dumping data for table emptypes
--- --
--- insert into emptypes (name, notes) values
---    ('Full-time', ''),
---    ('Part-time', ''),
---    ('Casual', ''),
---    ('Contract', ''),
---    ('Trainee', ''),
---    ('Commission', '');
-
-
 -------------------------------------------------------------------------------------------------------------------
 -- Table structure for table employees
 --
@@ -130,12 +102,6 @@ insert into employees (jobid, fullname, gender, phone, email, address1, city, st
 
 insert into employees (jobid, fullname, gender, phone, email, address1, city, state, country, salary) values
    (2,'Jane Princess', 'F', '652119400', '', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 100000);
-
-SELECT u.username, e.employeeid, r.roleid, c.userid, m.userid FROM users u 
-INNER JOIN employees e USING (employeeid) 
-INNER JOIN roles r USING (roleid) 
-INNER JOIN users c ON c.userid = u.createdby 
-INNER JOIN users m ON m.userid = u.updatedby;
 
 
 
@@ -278,18 +244,6 @@ create unique index user_name on users (
 insert into users (employeeid, roleid, username, password) values
   (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ));
 
-select u.userid, u.username, r.name, e.fullname, c.username creator, (select em.fullname creator_fname from users c
-   inner join employees em using (employeeid)), 
-m.username modifier from users u inner join roles r using (roleid)
-   inner join employees e using (employeeid)
-   inner join users c on c.createdby = u.userid
-   inner join users m on c.updatedby = u.userid
-   order by u.userid;
--- insert into users (employeeid, roleid, username, password, createdby) values
---   (1, 2, 'Nguh', crypt('adminPass', gen_salt('bf', 8) ), 1 );
-
--- select u.* from users u left join users c on u.userid = c.userid where c.userid = 1;
-
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -302,40 +256,27 @@ drop table if exists customers CASCADE;
 create table customers (
    customerid           serial               not null,
    fullname             varchar(254)         not null,
-   gender               varchar(1)           default null,
-   phone                varchar(254)         null,
-   email                varchar(254)         null,
-   address1             varchar(254)         null,
-   address2             varchar(254)         null,
-   city                 varchar(254)         null,
-   state                varchar(254)         null,
-   zip                  varchar(254)         default '0000',
-   country              varchar(254)         null,
-   image                bytea                null,
-   comments             text                 null,
-   createdby            int4                 not null,
-   updatedby            int4                 null,
+   gender               varchar(1)           default 'u',
+   phone                varchar(254)         default '',
+   email                varchar(254)         default '',
+   address1             varchar(254)         default '',
+   address2             varchar(254)         default '',
+   city                 varchar(254)         default '',
+   state                varchar(254)         default '',
+   country              varchar(254)         default '',
+   image                varchar(254)         default '',
+   comments             text                 default '',
    createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_customer primary key (customerid)
 );
 
-create unique index cust_fullname on customers (
-   fullname
-);
 
 --
 -- Dumping data for table customers
 --
-insert into customers (fullname, gender, email, createdby) values
-   ('Jane Doe', 'F', '1234fondem@gmail.com', 1);
-
---
--- View structure for table customers
---
-
-drop view if exists cust_items CASCADE;
-create or replace view cust_items as select * from customers;
+insert into customers (fullname, gender, email) values
+   ('Jane Doe', 'F', '1234fondem@gmail.com');
 
 
 
@@ -550,12 +491,6 @@ alter table org_meta
 
 ---- Foreign Key structure for table employees
 --
-
-alter table employees
-   drop constraint fk_employee_assoc_job;
-alter table employees
-   drop constraint fk_employee_assoc_emptype;
-
 alter table employees
    add constraint fk_employee_assoc_job foreign key (jobid)
       references jobs (jobid)
@@ -585,16 +520,6 @@ alter table shift_breaks
 
 ---- Foreign Key structure for table users
 --
-alter table users
-   drop constraint fk_user_assoc_employee;
-alter table users
-   drop constraint fk_user_assoc_role;
-
-alter table users
-   add constraint fk_user_assoc_employee foreign key (employeeid)
-      references employees (employeeid)
-      on delete CASCADE on update RESTRICT;
-
 alter table users
    add constraint fk_user_assoc_role foreign key (roleid)
       references roles (roleid)
