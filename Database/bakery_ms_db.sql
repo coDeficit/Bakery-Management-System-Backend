@@ -67,28 +67,28 @@ insert into jobs (title, description) values
 -------------------------------------------------------------------------------------------------------------------
 -- Table structure for table emptypes
 --
-drop table if exists emptypes CASCADE;
-create table emptypes (
-   emptypeid            serial                    not null,
-   name                 varchar(254)              not null,
-   notes                text                      default '',
-   constraint pk_emptype primary key (emptypeid)
-);
+-- drop table if exists emptypes CASCADE;
+-- create table emptypes (
+--    emptypeid            serial                    not null,
+--    name                 varchar(254)              not null,
+--    notes                text                      default '',
+--    constraint pk_emptype primary key (emptypeid)
+-- );
 
-create unique index emptype_title on emptypes (
-   name
-);
+-- create unique index emptype_title on emptypes (
+--    name
+-- );
 
---
--- Dumping data for table emptypes
---
-insert into emptypes (name, notes) values
-   ('Full-time', ''),
-   ('Part-time', ''),
-   ('Casual', ''),
-   ('Contract', ''),
-   ('Trainee', ''),
-   ('Commission', '');
+-- --
+-- -- Dumping data for table emptypes
+-- --
+-- insert into emptypes (name, notes) values
+--    ('Full-time', ''),
+--    ('Part-time', ''),
+--    ('Casual', ''),
+--    ('Contract', ''),
+--    ('Trainee', ''),
+--    ('Commission', '');
 
 
 -------------------------------------------------------------------------------------------------------------------
@@ -99,11 +99,11 @@ drop table if exists employees CASCADE;
 create table employees (
    employeeid           serial               not null,
    jobid                int4                 not null,
-   emptypeid            int4                 not null,
    fullname             varchar(254)         not null,
    gender               char(1)              default '',
    phone                varchar(254)         not null,
    email                varchar(254)         default '',
+   employment_type      varchar(254)         default '',
    address1             varchar(254)         not null,
    address2             varchar(254)         default '',
    city                 varchar(254)         not null,
@@ -127,6 +127,9 @@ create unique index emp_phone on employees (
 --
 insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary) values
    (2, 4, 'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000);
+
+insert into employees (jobid, emptypeid, fullname, gender, phone, email, address1, city, state, country, salary) values
+   (2, 3, 'Jane Princess', 'F', '652119400', '', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 100000);
 
 SELECT u.username, e.employeeid, r.roleid, c.userid, m.userid FROM users u 
 INNER JOIN employees e USING (employeeid) 
@@ -542,20 +545,26 @@ create table sales (
 alter table org_meta
    add constraint fk_org_meta_assoc_employee foreign key (employeeid)
       references employees (employeeid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table employees
 --
+
+alter table employees
+   drop constraint fk_employee_assoc_job;
+alter table employees
+   drop constraint fk_employee_assoc_emptype;
+
 alter table employees
    add constraint fk_employee_assoc_job foreign key (jobid)
       references jobs (jobid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table employees
    add constraint fk_employee_assoc_emptype foreign key (emptypeid)
       references emptypes (emptypeid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table shifts
@@ -563,7 +572,7 @@ alter table employees
 alter table shifts
    add constraint fk_shift_assoc_employee foreign key (employeeid)
       references employees (employeeid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
       
 
 ---- Foreign Key structure for table shift_breaks
@@ -571,25 +580,30 @@ alter table shifts
 alter table shift_breaks
    add constraint fk_shift_break_assoc_shift foreign key (shiftid)
       references shifts (shiftid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table shift_breaks
    add constraint fk_shift_break_assoc_break foreign key (breakid)
       references breaks (breakid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table users
 --
 alter table users
+   drop constraint fk_user_assoc_employee;
+alter table users
+   drop constraint fk_user_assoc_role;
+
+alter table users
    add constraint fk_user_assoc_employee foreign key (employeeid)
       references employees (employeeid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table users
    add constraint fk_user_assoc_role foreign key (roleid)
       references roles (roleid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table items
@@ -597,17 +611,17 @@ alter table users
 alter table items
    add constraint fk_item_assoc_cat foreign key (categoryid)
       references categories (categoryid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table items
    add constraint fk_item_assoc_user foreign key (createdby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table items
    add constraint fk_item_assoc_user foreign key (updatedby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table stock_control
@@ -615,22 +629,22 @@ alter table items
 alter table stock_control
    add constraint fk_stck_ctrl_assoc_item foreign key (itemid)
       references items (itemid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table stock_control
    add constraint fk_stck_ctrl_assoc_sale foreign key (saleid)
       references sales (saleid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table stock_control
    add constraint fk_stck_ctrl_assoc_user foreign key (createdby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table stock_control
    add constraint fk_stck_ctrl_assoc_user foreign key (updatedby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table orders
@@ -638,22 +652,22 @@ alter table stock_control
 alter table orders
    add constraint fk_order_assoc_customer foreign key (customerid)
       references customers (customerid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table orders
    add constraint fk_order_assoc_state foreign key (state_code)
       references order_states (state_code)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table orders
    add constraint fk_order_assoc_user foreign key (createdby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table orders
    add constraint fk_order_assoc_user foreign key (updatedby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 ---- Foreign Key structure for table sales
@@ -661,22 +675,22 @@ alter table orders
 alter table sales
    add constraint fk_sale_assoc_order foreign key (orderid)
       references orders (orderid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table sales
    add constraint fk_sale_assoc_pay foreign key (pay_method_id)
       references pay_methods (pay_method_id)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table sales
    add constraint fk_sale_assoc_user foreign key (createdby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 alter table sales
    add constraint fk_sale_assoc_user foreign key (updatedby)
       references users (userid)
-      on delete CASCADE on update CASCADE;
+      on delete CASCADE on update RESTRICT;
 
 
 

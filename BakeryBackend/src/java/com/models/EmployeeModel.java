@@ -1,8 +1,6 @@
 package com.models;
 
 import com.controllers.SuperController;
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -11,7 +9,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 public class EmployeeModel extends SuperModel {
-
     private JobModel jobModel = null;
     private EmptypeModel emptypeModel = null;
     private long employeeid;
@@ -59,9 +56,8 @@ public class EmployeeModel extends SuperModel {
     }
 
     public EmployeeModel(long jobid, long emptypeid, String fullname, String gender, String phone,
-            String email, String address1, String address2, String city, String state, String zip,
-            String country, long salary, String image, String status, String notes,
-            long createdby, long updatedby, Timestamp createdat, Timestamp updatedat) {
+            String email, String address1, String address2, String city, String state,
+            String country, long salary, String image, String status, String notes) {
         this.jobid = jobid;
         this.emptypeid = emptypeid;
         this.fullname = fullname;
@@ -77,8 +73,6 @@ public class EmployeeModel extends SuperModel {
         this.image = image;
         this.status = status;
         this.notes = notes;
-        this.createdat = createdat;
-        this.updatedat = updatedat;
     }
 
     public EmployeeModel(ResultSet set) throws SQLException, Exception {
@@ -205,7 +199,7 @@ public class EmployeeModel extends SuperModel {
         return emptypeid;
     }
 
-    public void setEmptypide(long emptypeid) {
+    public void setEmptypid(long emptypeid) {
         this.emptypeid = emptypeid;
     }
 

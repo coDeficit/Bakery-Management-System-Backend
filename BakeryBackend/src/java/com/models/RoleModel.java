@@ -12,8 +12,6 @@ public class RoleModel extends SuperModel {
     private String name;
     private String permissions;
     private String description;
-    private long createdby;
-    private long updatedby;
     private Timestamp createdat;
     private Timestamp updatedat;
     public static final String sequence_id = "roles_roleid_seq";
@@ -39,6 +37,8 @@ public class RoleModel extends SuperModel {
         this.name = set.getString("name");
         this.permissions = set.getString("permissions");
         this.description = set.getString("description");
+        this.createdat = set.getTimestamp("createdat");
+        this.updatedat = set.getTimestamp("updatedat");
     }
 
     @Override

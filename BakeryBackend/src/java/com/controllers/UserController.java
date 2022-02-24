@@ -21,11 +21,9 @@ import javax.ws.rs.core.Response;
 @Path("/users")
 public class UserController extends SuperController {
 
-    String getAllQuery = "SELECT u.*, e.*, r.*, c.*, m.* FROM users u "
+    String getAllQuery = "SELECT u.*, e.*, r.* FROM users u "
             + "LEFT JOIN employees e USING (employeeid) "
-            + "LEFT JOIN roles r USING (roleid) "
-            + "LEFT JOIN users c ON c.userid = u.createdby "
-            + "LEFT JOIN users m ON m.userid = u.updatedby ";
+            + "LEFT JOIN roles r USING (roleid) ";
 
     public UserController() {
     }
@@ -107,8 +105,7 @@ public class UserController extends SuperController {
         Response response = null;
 
         String query = "insert into users (employeeid, roleid, username, password, "
-                + "state, createdby, updatedby) values "
-                + "(?, ?, ?, crypt(?, gen_salt('bf', 8) ), ?, ?, ?)";
+                + "state) values (?, ?, ?, crypt(?, gen_salt('bf', 8) ), ?)";
 
         setPreparedStatement(query);
         preparedStatement.setLong(1, model.getEmployeeid());
@@ -116,35 +113,16 @@ public class UserController extends SuperController {
         preparedStatement.setString(3, model.getUsername());
         preparedStatement.setString(4, model.getPassword());
         preparedStatement.setBoolean(5, model.isState());
-        preparedStatement.setLong(6, model.getCreatedby());
-        preparedStatement.setLong(7, model.getUpdatedby());
         preparedStatement.executeUpdate();
         setCreateStatement();
 
         resultSet = statement.executeQuery("SELECT last_value FROM " + UserModel.sequence_id);
-
-//        while (resultSet.next()) {
-//            int instance_id = resultSet.getInt("last_value");
-//            System.out.println("Instance id: " + instance_id);
-//
-//            try (ResultSet set = statement.executeQuery("SELECT c.*, p.* FROM Mechanic c left join Person p ON c.person=p.person_id WHERE Mechanic_id=" + instance_id)) {
-//                while (set.next()) {
-//                    MechanicModel createdInstance = new MechanicModel(set, true);
-//                    System.out.println("Created instance: " + createdInstance.__str__());
-//                    json = createdInstance.getJsonObject();
-//                }
-//            }
-//        }
 
         while (resultSet.next()) {
             int userid = resultSet.getInt("last_value");
             response = getById(userid);
         }
         
-//        while (resultSet.next()) {
-//            int userid = resultSet.getInt("last_value");
-//            response = getById(userid);
-//        }
         resultSet.close();
         statement.close();
         preparedStatement.close();
@@ -164,8 +142,7 @@ public class UserController extends SuperController {
         Response response = null;
 
         String query = "UPDATE users SET employeeid = ?, roleid = ?, username = ?, "
-                + "password = crypt(?, gen_salt('bf', 8) ), state = ?, "
-                + "createdby = ?, updatedby = ? WHERE userid = ?";
+                + "password = crypt(?, gen_salt('bf', 8) ), state = ? WHERE userid = ?";
 
         setPreparedStatement(query);
         preparedStatement.setLong(1, model.getEmployeeid());
@@ -173,15 +150,11 @@ public class UserController extends SuperController {
         preparedStatement.setString(3, model.getUsername());
         preparedStatement.setString(4, model.getPassword());
         preparedStatement.setBoolean(5, model.isState());
-        preparedStatement.setLong(6, model.getCreatedby());
-        preparedStatement.setLong(7, model.getUpdatedby());
-        preparedStatement.setLong(8, userid);
+        preparedStatement.setLong(6, userid);
         preparedStatement.executeUpdate();
 
         setCreateStatement();
         resultSet = statement.executeQuery(getAllQuery + "WHERE u.userid = " + userid);
-
-        //UserController userController = new UserController();
 
         while (resultSet.next()) {
             response = getById(userid);

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 public class EmptypeModel extends SuperModel {
 
@@ -31,15 +32,14 @@ public class EmptypeModel extends SuperModel {
 
     @Override
     public JsonObject getJsonObject() {
-        JsonObject json = null;
+        JsonObjectBuilder json = null;
 
         json = Json.createObjectBuilder()
                 .add("emptypeid", emptypeid)
                 .add("name", name)
-                .add("notes", notes)
-                .build();
+                .add("notes", notes);
 
-        return json;
+        return json.build();
     }
 
     public EmptypeModel() {

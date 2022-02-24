@@ -32,6 +32,17 @@ public class UserModel extends SuperModel {
         this.updatedat = updatedat;
     }
 
+    public UserModel(long userid, long employeeid, long roleid, String username, String password, boolean state, Timestamp createdat, Timestamp updatedat) {
+        this.userid = userid;
+        this.employeeid = employeeid;
+        this.roleid = roleid;
+        this.username = username;
+        this.password = password;
+        this.state = state;
+        this.createdat = createdat;
+        this.updatedat = updatedat;
+    }
+
     public UserModel(ResultSet set) throws SQLException, Exception {
         this.userid = set.getLong("userid");
         this.employeeid = set.getLong("employeeid");
@@ -81,9 +92,7 @@ public class UserModel extends SuperModel {
                 if (employeeModel != null) {
                     json.add("employee_details", employeeModel.getJsonObject());
                 }
-                if (roleModel != null) {
-                    json.add("role_details", roleModel.getJsonObject());
-                }
+                json.add("role_details", roleModel.getJsonObject());
 
         return json.build();
     }
