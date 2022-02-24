@@ -94,6 +94,7 @@ public class JobController extends SuperController {
     public Response create(JobModel model) throws SQLException {
 
         Response response = null;
+        JobController jobController = new JobController();
 
         setPreparedStatement("INSERT INTO jobs (title, description) VALUES (?,?)");
         preparedStatement.setString(1, model.getTitle());
@@ -104,7 +105,7 @@ public class JobController extends SuperController {
 
         while (resultSet.next()) {
             int jobid = resultSet.getInt("last_value");
-            response = getById(jobid);
+            response = jobController.getById(jobid);
         }
         resultSet.close();
         statement.close();
@@ -123,6 +124,7 @@ public class JobController extends SuperController {
         System.out.println("Calling JobController.update");
         JobModel job = null;
         Response response = null;
+        JobController jobController = new JobController();
 
         setPreparedStatement("UPDATE jobs SET title=?, description=? WHERE jobid = ?");
         preparedStatement.setString(1, model.getTitle());
@@ -134,7 +136,7 @@ public class JobController extends SuperController {
         resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
 
         while (resultSet.next()) {
-            response = getById(jobid);
+            response = jobController.getById(jobid);
         }
 
         resultSet.close();

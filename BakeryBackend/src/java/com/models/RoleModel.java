@@ -1,4 +1,3 @@
-
 package com.models;
 
 import java.sql.ResultSet;
@@ -6,10 +5,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import javax.json.Json;
 import javax.json.JsonObject;
-
+import javax.json.JsonObjectBuilder;
 
 public class RoleModel extends SuperModel {
 
+    private UserModel creatorModel = null;
+    private UserModel modifierModel = null;
     private long roleid;
     private String name;
     private String permissions;
@@ -20,8 +21,8 @@ public class RoleModel extends SuperModel {
     private Timestamp updatedat;
     public static final String sequence_id = "roles_roleid_seq";
 
-    public RoleModel( long roleid, String name, String permissions,  
-    String description, long createdby, long updatedby, Timestamp createdat, Timestamp updatedat ) {
+    public RoleModel(long roleid, String name, String permissions,
+            String description, long createdby, long updatedby, Timestamp createdat, Timestamp updatedat) {
         this.roleid = roleid;
         this.name = name;
         this.permissions = permissions;
@@ -32,7 +33,7 @@ public class RoleModel extends SuperModel {
         this.updatedat = updatedat;
     }
 
-    public RoleModel(String name, String permissions, String description, long createdby, long updatedby ) {
+    public RoleModel(String name, String permissions, String description, long createdby, long updatedby) {
         this.name = name;
         this.permissions = permissions;
         this.description = description;
@@ -49,11 +50,31 @@ public class RoleModel extends SuperModel {
         this.updatedby = set.getLong("updatedby");
         this.createdat = set.getTimestamp("createdat");
         this.updatedat = set.getTimestamp("updatedat");
+        this.creatorModel = new UserModel(set, false, false, false, false);
+        this.modifierModel = new UserModel(set, false, false, false, false);
+    }
+
+    public RoleModel(ResultSet set, boolean withCreator, boolean withModifier) throws Exception {
+        this.roleid = set.getLong("roleid");
+        this.name = set.getString("name");
+        this.permissions = set.getString("permissions");
+        this.description = set.getString("description");
+        this.createdby = set.getLong("createdby");
+        this.updatedby = set.getLong("updatedby");
+        this.createdat = set.getTimestamp("createdat");
+        this.updatedat = set.getTimestamp("updatedat");
+
+        if (withCreator) {
+            this.creatorModel = new UserModel(set, true, true, true, true);
+        }
+        if (withModifier) {
+            this.modifierModel = new UserModel(set, true, true, true, true);
+        }
     }
 
     @Override
     public JsonObject getJsonObject() {
-        JsonObject json = null;
+        JsonObjectBuilder json = null;
 
         json = Json.createObjectBuilder()
                 .add("roleid", roleid)
@@ -63,10 +84,16 @@ public class RoleModel extends SuperModel {
                 .add("createdby", createdby)
                 .add("updatedby", updatedby)
                 .add("createdat", createdat.toString())
-                .add("updatedat", updatedat.toString())
-                .build();
+                .add("updatedat", updatedat.toString());
 
-        return json;
+        if (creatorModel != null) {
+            json.add("creator_details", creatorModel.getJsonObject());
+        }
+        if (modifierModel != null) {
+            json.add("modifier_details", modifierModel.getJsonObject());
+        }
+
+        return json.build();
     }
 
     public RoleModel() {
@@ -135,7 +162,21 @@ public class RoleModel extends SuperModel {
     public void setUpdatedat(Timestamp updatedat) {
         this.updatedat = updatedat;
     }
-    
-    
-    
+
+    public UserModel getCreatorModel() {
+        return creatorModel;
+    }
+
+    public void setCreatorModel(UserModel creatorModel) {
+        this.creatorModel = creatorModel;
+    }
+
+    public UserModel getModifierModel() {
+        return modifierModel;
+    }
+
+    public void setModifierModel(UserModel modifierModel) {
+        this.modifierModel = modifierModel;
+    }
+
 }

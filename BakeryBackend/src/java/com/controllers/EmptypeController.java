@@ -96,6 +96,7 @@ public class EmptypeController extends SuperController {
     public Response create(EmptypeModel model) throws SQLException {
 
         Response response = null;
+        EmptypeController emptypeController = new EmptypeController();
 
         setPreparedStatement("INSERT INTO emptypes (name, notes) VALUES (?,?)");
         preparedStatement.setString(1, model.getName());
@@ -106,7 +107,7 @@ public class EmptypeController extends SuperController {
 
         while (resultSet.next()) {
             int emptypeid = resultSet.getInt("last_value");
-            response = getById(emptypeid);
+            response = emptypeController.getById(emptypeid);
         }
         resultSet.close();
         statement.close();
@@ -125,6 +126,7 @@ public class EmptypeController extends SuperController {
         System.out.println("Calling EmptypeController.update");
         EmptypeModel emptype = null;
         Response response = null;
+        EmptypeController emptypeController = new EmptypeController();
 
         setPreparedStatement("UPDATE emptypes SET name=?, notes=? WHERE emptypeid = ?");
         preparedStatement.setString(1, model.getName());
@@ -136,7 +138,7 @@ public class EmptypeController extends SuperController {
         resultSet = statement.executeQuery("SELECT * FROM emptypes WHERE emptypeid = " + emptypeid);
 
         while (resultSet.next()) {
-            response = getById(emptypeid);
+            response = emptypeController.getById(emptypeid);
         }
 
         resultSet.close();

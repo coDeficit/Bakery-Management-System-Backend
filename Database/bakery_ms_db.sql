@@ -103,7 +103,7 @@ create table employees (
    jobid                int4                 not null,
    emptypeid            int4                 not null,
    fullname             varchar(254)         not null,
-   gender               varchar(1)           default '',
+   gender               char(1)              default '',
    phone                varchar(254)         not null,
    email                varchar(254)         default '',
    address1             varchar(254)         not null,
@@ -113,7 +113,7 @@ create table employees (
    zip                  varchar(254)         default '0000',
    country              varchar(254)         not null,
    salary               numeric(10, 0)       default 0,
-   image                bytea                default '',
+   image                varchar(254)         default '',
    status               varchar(254)         default 'Current',
    notes                text                 default '',
    createdby            int4                 not null,
@@ -260,8 +260,7 @@ create table users (
    roleid               int4                 not null,
    username             varchar(254)         not null,
    password             text                 not null,
-   state                bool                 default TRUE,
-   visible              boolean              default TRUE,
+   state                boolean              default TRUE,
    createdby            int4                 not null,
    updatedby            int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
@@ -279,6 +278,13 @@ create unique index user_name on users (
 insert into users (employeeid, roleid, username, password, createdby, updatedby) values
   (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ), 1, 1 );
 
+select u.userid, u.username, r.name, e.fullname, c.username creator, (select em.fullname creator_fname from users c
+   inner join employees em using (employeeid)), 
+m.username modifier from users u inner join roles r using (roleid)
+   inner join employees e using (employeeid)
+   inner join users c on c.createdby = u.userid
+   inner join users m on c.updatedby = u.userid
+   order by u.userid;
 -- insert into users (employeeid, roleid, username, password, createdby) values
 --   (1, 2, 'Nguh', crypt('adminPass', gen_salt('bf', 8) ), 1 );
 
@@ -297,7 +303,7 @@ create table customers (
    customerid           serial               not null,
    fullname             varchar(254)         not null,
    gender               varchar(1)           default null,
-   phone          varchar(254)         null,
+   phone                varchar(254)         null,
    email                varchar(254)         null,
    address1             varchar(254)         null,
    address2             varchar(254)         null,
@@ -565,12 +571,12 @@ alter table employees
       on delete CASCADE on update CASCADE;
       
 alter table employees
-   add constraint fk_employee_assoc_user foreign key (createdby)
+   add constraint fk_employee_assoc_creator foreign key (createdby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
 alter table employees
-   add constraint fk_employee_assoc_user foreign key (updatedby)
+   add constraint fk_employee_assoc_modifier foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
@@ -583,12 +589,12 @@ alter table shifts
       on delete CASCADE on update CASCADE;
 
 alter table shifts
-   add constraint fk_shift_assoc_user foreign key (createdby)
+   add constraint fk_shift_assoc_creator foreign key (createdby)
       references users (userid)
       on delete CASCADE on update CASCADE;
 
 alter table shifts
-   add constraint fk_shift_assoc_user foreign key (updatedby)
+   add constraint fk_shift_assoc_modifier foreign key (updatedby)
       references users (userid)
       on delete CASCADE on update CASCADE;
       
@@ -603,6 +609,19 @@ alter table shift_breaks
 alter table shift_breaks
    add constraint fk_shift_break_assoc_break foreign key (breakid)
       references breaks (breakid)
+      on delete CASCADE on update CASCADE;
+
+
+---- Foreign Key structure for table roles
+--
+alter table roles
+   add constraint fk_role_assoc_creator foreign key (createdby)
+      references users (userid)
+      on delete CASCADE on update CASCADE;
+
+alter table roles
+   add constraint fk_role_assoc_modifier foreign key (updatedby)
+      references users (userid)
       on delete CASCADE on update CASCADE;
 
 

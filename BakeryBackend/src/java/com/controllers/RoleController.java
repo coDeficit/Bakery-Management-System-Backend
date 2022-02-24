@@ -2,6 +2,7 @@
 package com.controllers;
 
 import com.models.RoleModel;
+import com.models.UserModel;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,13 +18,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 @Path("/roles")
 public class RoleController extends SuperController {
 
+    String getAllQuery = "SELECT r.*, c.*, m.* FROM roles r "
+            + "LEFT JOIN users c ON r.createdby = c.userid "
+            + "LEFT JOIN users m ON r.updatedby = m.userid ";
+
     public RoleController() {
     }
-    
+
     // return all roles as json object
     @GET
     @Path("/all")
@@ -35,7 +39,10 @@ public class RoleController extends SuperController {
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM roles");
+
+            String query = getAllQuery + "order by r.roleid";
+
+            resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
                 RoleModel role = new RoleModel(resultSet);
@@ -68,7 +75,7 @@ public class RoleController extends SuperController {
 
         try {
             setCreateStatement();
-            String query = "SELECT * from roles WHERE roleid = " + roleid;
+            String query = getAllQuery + "WHERE r.roleid = " + roleid;
             resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
@@ -105,11 +112,14 @@ public class RoleController extends SuperController {
         preparedStatement.setLong(5, model.getUpdatedby());
         preparedStatement.executeUpdate();
         setCreateStatement();
+
         resultSet = statement.executeQuery("SELECT last_value FROM " + RoleModel.sequence_id);
+
+        RoleController roleController = new RoleController();
 
         while (resultSet.next()) {
             int roleid = resultSet.getInt("last_value");
-            response = getById(roleid);
+            response = roleController.getById(roleid);
         }
         resultSet.close();
         statement.close();
@@ -129,8 +139,8 @@ public class RoleController extends SuperController {
         RoleModel role = null;
         Response response = null;
 
-        String query = "UPDATE roles SET name=?, permissions=?, " 
-        + "description=?, createdby=?, updatedby=? WHERE roleid = ?";
+        String query = "UPDATE roles SET name=?, permissions=?, "
+                + "description=?, createdby=?, updatedby=? WHERE roleid = ?";
         setPreparedStatement(query);
         preparedStatement.setString(1, model.getName());
         preparedStatement.setString(2, model.getPermissions());
@@ -141,10 +151,12 @@ public class RoleController extends SuperController {
         preparedStatement.executeUpdate();
 
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT * FROM roles WHERE roleid = " + roleid);
+        resultSet = statement.executeQuery(getAllQuery + "WHERE r.roleid = " + roleid);
+
+        RoleController roleController = new RoleController();
 
         while (resultSet.next()) {
-            response = getById(roleid);
+            response = roleController.getById(roleid);
         }
 
         resultSet.close();
@@ -163,7 +175,7 @@ public class RoleController extends SuperController {
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM roles WHERE roleid = " + roleid);
+            resultSet = statement.executeQuery(getAllQuery + "WHERE r.roleid = " + roleid);
 
             while (resultSet.next()) {
                 RoleModel role = new RoleModel(resultSet);
@@ -184,5 +196,4 @@ public class RoleController extends SuperController {
         }
     }
 
-    
 }
