@@ -290,15 +290,15 @@ insert into customers (fullname, gender, email) values
 drop table if exists categories CASCADE;
 create table categories (
    categoryid           serial               not null,
-   name                 varchar(254)         not null,
-   description          text                 default '',
+   cat_name             varchar(254)         not null,
+   cat_desc             text                 default '',
    constraint pk_category primary key (categoryid)
 );
 
 --
 -- Dumping data for table categories
 --
-insert into categories(name) values 
+insert into categories(cat_name) values 
    ('Pastries'),
    ('Breads');
 
@@ -310,36 +310,29 @@ insert into categories(name) values
 drop table if exists items CASCADE;
 create table items (
    itemid               serial               not null,
-   -- supplierid           int4                 null,
-   categoryid           int4                 null,
-   name                 varchar(254)         not null,
-   color_ref            varchar(16)          null,
-   image                bytea                null,
+   categoryid           int4                 not null,
+   item_name            varchar(254)         not null,
+   item_color           varchar(16)          default '',
+   item_image           varchar(254)         default '',
    cost_price           numeric(10, 0)       default 0,
    unit_price           numeric(10, 0)       not null,
    base_qty             numeric(10, 0)       default 0,
    current_qty          numeric(10, 0)       default 0,
    stock_level          numeric(10, 0)       default 0,
-   sku                  varchar(14)          null,
-   description          text                 null,
-   visible              boolean              default TRUE,
-   available            boolean              default FALSE,
-   createdby            int4                 not null,
-   updatedby            int4                 null,
-   createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   sku                  varchar(14)          default '',
+   item_desc            text                 default '',
+   item_visible         boolean              default TRUE,
+   item_avail           boolean              default FALSE,
+   item_createdat        timestamp            default CURRENT_TIMESTAMP,
+   item_updatedat        timestamp            default CURRENT_TIMESTAMP,
    constraint pk_item primary key (itemid)
-);
-
-create unique index item_sku on items (
-   sku
 );
 
 --
 -- Dumping data for table items
 --
-insert into items (name, unit_price, createdby) values
-   ('Sugar balls', 100, 1);
+insert into items (categoryid, item_name, unit_price) values
+   (2, 'Sugar balls', 100);
 
 
 -------------------------------------------------------------------------------------------------------------------
@@ -371,22 +364,18 @@ create table stock_control (
 --
 drop table if exists pay_methods CASCADE;
 create table pay_methods (
-   pay_method_id        int4                 not null,
-   name                 varchar(254)         not null,
-   provider             varchar(14)          null,
-   image                bytea                null,
-   description          text                 null,
+   pay_methodid        serial               not null,
+   pay_name             varchar(254)         not null,
+   pay_provider         varchar(14)          default '',
+   pay_image            varchar(254)         default '',
+   pay_desc             text                 default '',
    constraint pk_pay_method primary key (pay_methodid)
-);
-
-create unique index pay_method_name on pay_methods (
-   name
 );
 
 --
 -- Dumping data for table pay_methods
 --
-insert into pay_methods(name) values 
+insert into pay_methods(pay_name) values 
    ('Cash'),
    ('MTN MOMO'),
    ('Orange Money');
@@ -527,16 +516,6 @@ alter table users
 alter table items
    add constraint fk_item_assoc_cat foreign key (categoryid)
       references categories (categoryid)
-      on delete CASCADE on update RESTRICT;
-
-alter table items
-   add constraint fk_item_assoc_user foreign key (createdby)
-      references users (userid)
-      on delete CASCADE on update RESTRICT;
-
-alter table items
-   add constraint fk_item_assoc_user foreign key (updatedby)
-      references users (userid)
       on delete CASCADE on update RESTRICT;
 
 
@@ -680,6 +659,14 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 --
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON customers
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+---- Tigger structure for table categories
+--
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON categories
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 

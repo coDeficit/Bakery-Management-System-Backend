@@ -4,7 +4,7 @@ package com.controllers;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import com.models.CategoryModel;
+import com.models.PayMethodModel;
 import java.sql.SQLException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -17,14 +17,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Path("/pay_methods")
+public class PayMethodController extends SuperController {
 
-@Path("/categories")
-public class CategoryController extends SuperController {
-
-    public CategoryController() {
+    public PayMethodController() {
     }
 
-    // return all categories as json object
+    // return all pay_methods as json object
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -35,12 +34,12 @@ public class CategoryController extends SuperController {
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM categories order by categoryid ");
+            resultSet = statement.executeQuery("SELECT * FROM pay_methods order by pay_methodid");
 
             while (resultSet.next()) {
-                CategoryModel category = new CategoryModel(resultSet);
-                System.out.println("Displaying category instance: " + category.__response());
-                json = category.getJsonObject();
+                PayMethodModel pay_method = new PayMethodModel(resultSet);
+                System.out.println("Displaying Job instance: " + pay_method.__response());
+                json = pay_method.getJsonObject();
                 builder.add(json);
             }
 
@@ -59,21 +58,21 @@ public class CategoryController extends SuperController {
 
     }
 
-    // return a single job as json object
+    // return a single pay_method as json object
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long categoryid) {
+    public Response getById(@PathParam("id") long pay_methodid) {
         JsonObject json = null;
 
         try {
             setCreateStatement();
-            String query = "SELECT * from categories WHERE categoryid = " + categoryid;
+            String query = "SELECT * from pay_methods WHERE pay_methodid = " + pay_methodid;
             resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                CategoryModel category = new CategoryModel(resultSet);
-                json = category.getJsonObject();
+                PayMethodModel pay_method = new PayMethodModel(resultSet);
+                json = pay_method.getJsonObject();
             }
 
             close();
@@ -89,25 +88,27 @@ public class CategoryController extends SuperController {
         }
     }
 
-    // create a job and return json object
+    // create a pay_method and return json object
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(CategoryModel model) throws SQLException {
+    public Response create(PayMethodModel model) throws SQLException {
 
         Response response = null;
-        CategoryController CategoryController = new CategoryController();
+        PayMethodController PayMethodController = new PayMethodController();
 
-        setPreparedStatement("INSERT INTO categories (cat_name, cat_desc) VALUES (?,?)");
-        preparedStatement.setString(1, model.getCat_name());
-        preparedStatement.setString(2, model.getCat_desc());
+        setPreparedStatement("INSERT INTO pay_methods (pay_name, pay_provider, pay_image, pay_desc) VALUES (?,?,?,?)");
+        preparedStatement.setString(1, model.getPay_name());
+        preparedStatement.setString(2, model.getPay_provider());
+        preparedStatement.setString(3, model.getPay_image());
+        preparedStatement.setString(4, model.getPay_desc());
         preparedStatement.executeUpdate();
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT last_value FROM " + CategoryModel.sequence_id);
+        resultSet = statement.executeQuery("SELECT last_value FROM " + PayMethodModel.sequence_id);
 
         while (resultSet.next()) {
-            int categoryid = resultSet.getInt("last_value");
-            response = CategoryController.getById(categoryid);
+            int pay_methodid = resultSet.getInt("last_value");
+            response = PayMethodController.getById(pay_methodid);
         }
         resultSet.close();
         statement.close();
@@ -116,29 +117,31 @@ public class CategoryController extends SuperController {
         return response;
     }
 
-    // update a job and return json object
+    // update a pay_method and return json object
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long categoryid, CategoryModel model) throws SQLException {
+    public Response update(@PathParam("id") long pay_methodid, PayMethodModel model) throws SQLException {
 
-        System.out.println("Calling CategoryController.update");
-        CategoryModel category = null;
+        System.out.println("Calling PayMethodController.update");
+        PayMethodModel pay_method = null;
         Response response = null;
-        CategoryController CategoryController = new CategoryController();
+        PayMethodController PayMethodController = new PayMethodController();
 
-        setPreparedStatement("UPDATE categories SET cat_name=?, cat_desc=? WHERE categoryid = ?");
-        preparedStatement.setString(1, model.getCat_name());
-        preparedStatement.setString(2, model.getCat_desc());
-        preparedStatement.setLong(3, categoryid);
+        setPreparedStatement("UPDATE pay_methods SET pay_name = ?, pay_provider = ?, pay_image = ?, pay_desc = ? WHERE pay_methodid = ?");
+        preparedStatement.setString(1, model.getPay_name());
+        preparedStatement.setString(2, model.getPay_provider());
+        preparedStatement.setString(3, model.getPay_image());
+        preparedStatement.setString(4, model.getPay_desc());
+        preparedStatement.setLong(5, pay_methodid);
         preparedStatement.executeUpdate();
 
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT * FROM categories WHERE categoryid = " + categoryid);
+        resultSet = statement.executeQuery("SELECT * FROM pay_methods WHERE pay_methodid = " + pay_methodid);
 
         while (resultSet.next()) {
-            response = CategoryController.getById(categoryid);
+            response = PayMethodController.getById(pay_methodid);
         }
 
         resultSet.close();
@@ -152,18 +155,18 @@ public class CategoryController extends SuperController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long categoryid) {
+    public Response delete(@PathParam("id") long pay_methodid) {
         JsonObject json = null;
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM categories WHERE categoryid = " + categoryid);
+            resultSet = statement.executeQuery("SELECT * FROM pay_methods WHERE pay_methodid = " + pay_methodid);
 
             while (resultSet.next()) {
-                CategoryModel category = new CategoryModel(resultSet);
-                json = category.getJsonObject();
+                PayMethodModel pay_method = new PayMethodModel(resultSet);
+                json = pay_method.getJsonObject();
             }
-            statement.execute("DELETE FROM categories WHERE categoryid = " + categoryid);
+            statement.execute("DELETE FROM pay_methods WHERE pay_methodid = " + pay_methodid);
             resultSet.close();
             statement.close();
         } catch (Exception e) {
