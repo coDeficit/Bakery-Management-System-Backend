@@ -289,14 +289,10 @@ insert into customers (fullname, gender, email) values
 --
 drop table if exists categories CASCADE;
 create table categories (
-   categoryid           int4                 not null,
+   categoryid           serial               not null,
    name                 varchar(254)         not null,
-   description          text                 null,
+   description          text                 default '',
    constraint pk_category primary key (categoryid)
-);
-
-create unique index cat_name on categories (
-   name
 );
 
 --

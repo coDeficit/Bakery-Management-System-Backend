@@ -94,7 +94,7 @@ public class CustomerController extends SuperController {
         }
     }
 
-    // create an user and return json object
+    // create an customer and return json object
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -135,7 +135,7 @@ public class CustomerController extends SuperController {
         return response;
     }
 
-    // update an user and return json object
+    // update an customer and return json object
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -180,7 +180,7 @@ public class CustomerController extends SuperController {
         return response;
     }
 
-    // delete an user and return response
+    // delete an customer and return response
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
