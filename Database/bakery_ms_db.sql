@@ -416,13 +416,12 @@ insert into order_status(status_name, status_desc) values
 drop table if exists orders CASCADE;
 create table orders (
    orderid              serial               not null,
-   customerid           int4                 null,
-   state_code           varchar(254)         not null,
-   notes                text                 null,
-   createdby            int4                 not null,
-   updatedby            int4                 null,
+   order_cust           int4                 not null,
+   order_stat           varchar(254)         not null default 1,
+   order_notes          text                 null,
+   order_createdby      int4                 not null,
    createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            null,
+   updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_order primary key (orderid)
 );
 
