@@ -97,7 +97,7 @@ public class EmployeeModel extends SuperModel {
         this.jobModel = new JobModel(set);
     }
 
-    public EmployeeModel(ResultSet set, boolean withJob, boolean withType) throws SQLException, Exception {
+    public EmployeeModel(ResultSet set, boolean withJob) throws SQLException, Exception {
         this.employeeid = set.getLong("employeeid");
         this.jobid = set.getLong("jobid");
         this.fullname = set.getString("fullname");

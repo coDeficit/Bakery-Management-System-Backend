@@ -52,7 +52,7 @@ public class UserModel extends SuperModel {
         this.state = set.getBoolean("state");
         this.createdat = set.getTimestamp("createdat");
         this.updatedat = set.getTimestamp("updatedat");
-        this.employeeModel = new EmployeeModel(set, false, false);
+        this.employeeModel = new EmployeeModel(set, false);
         this.roleModel = new RoleModel(set);
     }
 

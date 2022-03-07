@@ -79,7 +79,7 @@ public class EmployeeController extends SuperController {
             resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                EmployeeModel employee = new EmployeeModel(resultSet, true, true);
+                EmployeeModel employee = new EmployeeModel(resultSet, true);
                 json = employee.getJsonObject();
             }
 

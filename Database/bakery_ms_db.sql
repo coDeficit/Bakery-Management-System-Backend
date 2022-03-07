@@ -364,7 +364,7 @@ create table stock_control (
 --
 drop table if exists pay_methods CASCADE;
 create table pay_methods (
-   pay_methodid        serial               not null,
+   pay_methodid        serial                not null,
    pay_name             varchar(254)         not null,
    pay_provider         varchar(14)          default '',
    pay_image            varchar(254)         default '',
@@ -375,36 +375,39 @@ create table pay_methods (
 --
 -- Dumping data for table pay_methods
 --
-insert into pay_methods(pay_name) values 
-   ('Cash'),
-   ('MTN MOMO'),
-   ('Orange Money');
+insert into pay_methods(pay_name, pay_provider) values 
+   ('Cash', ''),
+   ('MTN MOMO', 'MTN'),
+   ('Orange Money', 'Orange'),
+   ('Debit Card', ''),
+   ('Credit Card', ''),
+   ('Other', '');
 
 
 -------------------------------------------------------------------------------------------------------------------
--- Table structure for table order_states
+-- Table structure for table order_status
 --
-drop table if exists order_states CASCADE;
-create table order_states (
-   state_code           varchar(254)         not null,
-   name                 varchar(254)         not null,
-   color                varchar(16)          null,
-   description          text                 null,
-   constraint pk_order_state primary key (state_code)
+drop table if exists order_status CASCADE;
+create table order_status (
+   order_statusid       serial               not null,
+   status_name          varchar(254)         not null,
+   status_color         varchar(16)          null,
+   status_desc          text                 null,
+   constraint pk_order_status primary key (order_statusid)
 );
 
-create unique index order_state_name on order_states (
-   name
+create unique index order_status_name on order_status (
+   status_name
 );
 
 --
--- Dumping data for table order_states
+-- Dumping data for table order_status
 --
-insert into order_states(name) values 
-   ('PEND', 'Pending'),
-   ('CONFMD', 'Confirmed'),
-   ('PAID', 'Paid'),
-   ('CANCD', 'Cancelled');
+insert into order_status(status_name, status_color) values 
+   ('Pending'),
+   ('Confirmed'),
+   ('Paid'),
+   ('Cancelled');
 
 
 -------------------------------------------------------------------------------------------------------------------
