@@ -391,8 +391,8 @@ drop table if exists order_status CASCADE;
 create table order_status (
    order_statusid       serial               not null,
    status_name          varchar(254)         not null,
-   status_color         varchar(16)          null,
-   status_desc          text                 null,
+   status_color         varchar(16)          default '',
+   status_desc          text                 default '',
    constraint pk_order_status primary key (order_statusid)
 );
 
@@ -403,11 +403,11 @@ create unique index order_status_name on order_status (
 --
 -- Dumping data for table order_status
 --
-insert into order_status(status_name, status_color) values 
-   ('Pending'),
-   ('Confirmed'),
-   ('Paid'),
-   ('Cancelled');
+insert into order_status(status_name, status_desc) values 
+   ('Pending', 'Initial state of order. No action has been performed yet.'),
+   ('Confirmed', 'Order has been confirmed by client but not paid for yet.'),
+   ('Paid', 'Money exchanged and sale performed.'),
+   ('Cancelled', 'order cancelled');
 
 
 -------------------------------------------------------------------------------------------------------------------

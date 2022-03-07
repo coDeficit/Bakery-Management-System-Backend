@@ -1,9 +1,10 @@
+
 package com.controllers;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import com.models.JobModel;
+import com.models.OrderStatusModel;
 import java.sql.SQLException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -16,13 +17,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/jobs")
-public class JobController extends SuperController {
+@Path("/order_status")
+public class OrderStatusController extends SuperController {
 
-    public JobController() {
+    public OrderStatusController() {
     }
 
-    // return all jobs as json object
+    // return all order_status as json object
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -33,12 +34,12 @@ public class JobController extends SuperController {
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM jobs order by jobid");
+            resultSet = statement.executeQuery("SELECT * FROM order_status order by order_statusid");
 
             while (resultSet.next()) {
-                JobModel Job = new JobModel(resultSet);
-                System.out.println("Displaying Job instance: " + Job.__response());
-                json = Job.getJsonObject();
+                OrderStatusModel Order_status = new OrderStatusModel(resultSet);
+                System.out.println("Displaying Order_status instance: " + Order_status.__response());
+                json = Order_status.getJsonObject();
                 builder.add(json);
             }
 
@@ -57,21 +58,21 @@ public class JobController extends SuperController {
 
     }
 
-    // return a single job as json object
+    // return a single Order_status as json object
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long jobid) {
+    public Response getById(@PathParam("id") long order_statusid) {
         JsonObject json = null;
 
         try {
             setCreateStatement();
-            String query = "SELECT * from jobs WHERE jobid = " + jobid;
+            String query = "SELECT * from order_status WHERE order_statusid = " + order_statusid;
             resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                JobModel Job = new JobModel(resultSet);
-                json = Job.getJsonObject();
+                OrderStatusModel Order_status = new OrderStatusModel(resultSet);
+                json = Order_status.getJsonObject();
             }
 
             close();
@@ -87,25 +88,26 @@ public class JobController extends SuperController {
         }
     }
 
-    // create a job and return json object
+    // create a Order_status and return json object
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(JobModel model) throws SQLException {
+    public Response create(OrderStatusModel model) throws SQLException {
 
         Response response = null;
-        JobController jobController = new JobController();
+        OrderStatusController OrderStatusController = new OrderStatusController();
 
-        setPreparedStatement("INSERT INTO jobs (title, description) VALUES (?,?)");
-        preparedStatement.setString(1, model.getTitle());
-        preparedStatement.setString(2, model.getDescription());
+        setPreparedStatement("INSERT INTO order_status (status_name, status_color, status_desc) VALUES (?,?,?)");
+        preparedStatement.setString(1, model.getStatus_name());
+        preparedStatement.setString(2, model.getStatus_color());
+        preparedStatement.setString(3, model.getStatus_desc());
         preparedStatement.executeUpdate();
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT last_value FROM " + JobModel.sequence_id);
+        resultSet = statement.executeQuery("SELECT last_value FROM " + OrderStatusModel.sequence_id);
 
         while (resultSet.next()) {
-            int jobid = resultSet.getInt("last_value");
-            response = jobController.getById(jobid);
+            int order_statusid = resultSet.getInt("last_value");
+            response = OrderStatusController.getById(order_statusid);
         }
         resultSet.close();
         statement.close();
@@ -114,29 +116,30 @@ public class JobController extends SuperController {
         return response;
     }
 
-    // update a job and return json object
+    // update a Order_status and return json object
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long jobid, JobModel model) throws SQLException {
+    public Response update(@PathParam("id") long order_statusid, OrderStatusModel model) throws SQLException {
 
-        System.out.println("Calling JobController.update");
-        JobModel job = null;
+        System.out.println("Calling OrderStatusController.update");
+        OrderStatusModel Order_status = null;
         Response response = null;
-        JobController jobController = new JobController();
+        OrderStatusController OrderStatusController = new OrderStatusController();
 
-        setPreparedStatement("UPDATE jobs SET title=?, description=? WHERE jobid = ?");
-        preparedStatement.setString(1, model.getTitle());
-        preparedStatement.setString(2, model.getDescription());
-        preparedStatement.setLong(3, jobid);
+        setPreparedStatement("UPDATE order_status SET status_name=?, status_color=?, status_desc=? WHERE order_statusid = ?");
+        preparedStatement.setString(1, model.getStatus_name());
+        preparedStatement.setString(2, model.getStatus_color());
+        preparedStatement.setString(3, model.getStatus_desc());
+        preparedStatement.setLong(4, order_statusid);
         preparedStatement.executeUpdate();
 
         setCreateStatement();
-        resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
+        resultSet = statement.executeQuery("SELECT * FROM order_status WHERE order_statusid = " + order_statusid);
 
         while (resultSet.next()) {
-            response = jobController.getById(jobid);
+            response = OrderStatusController.getById(order_statusid);
         }
 
         resultSet.close();
@@ -146,22 +149,22 @@ public class JobController extends SuperController {
         return response;
     }
 
-    // delete a job and return response
+    // delete a Order_status and return response
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long jobid) {
+    public Response delete(@PathParam("id") long order_statusid) {
         JsonObject json = null;
 
         try {
             setCreateStatement();
-            resultSet = statement.executeQuery("SELECT * FROM jobs WHERE jobid = " + jobid);
+            resultSet = statement.executeQuery("SELECT * FROM order_status WHERE order_statusid = " + order_statusid);
 
             while (resultSet.next()) {
-                JobModel job = new JobModel(resultSet);
-                json = job.getJsonObject();
+                OrderStatusModel Order_status = new OrderStatusModel(resultSet);
+                json = Order_status.getJsonObject();
             }
-            statement.execute("DELETE FROM jobs WHERE jobid = " + jobid);
+            statement.execute("DELETE FROM order_status WHERE order_statusid = " + order_statusid);
             resultSet.close();
             statement.close();
         } catch (Exception e) {
