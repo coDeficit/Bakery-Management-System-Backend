@@ -61,7 +61,7 @@ public class JobController extends SuperController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long jobid) {
+    public Response getById(@PathParam("id") int jobid) {
         JsonObject json = null;
 
         try {
@@ -96,9 +96,9 @@ public class JobController extends SuperController {
         Response response = null;
         JobController jobController = new JobController();
 
-        setPreparedStatement("INSERT INTO jobs (title, description) VALUES (?,?)");
-        preparedStatement.setString(1, model.getTitle());
-        preparedStatement.setString(2, model.getDescription());
+        setPreparedStatement("INSERT INTO jobs (job_title, job_desc) VALUES (?,?)");
+        preparedStatement.setString(1, model.getJob_title());
+        preparedStatement.setString(2, model.getJob_desc());
         preparedStatement.executeUpdate();
         setCreateStatement();
         resultSet = statement.executeQuery("SELECT last_value FROM " + JobModel.sequence_id);
@@ -119,17 +119,17 @@ public class JobController extends SuperController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long jobid, JobModel model) throws SQLException {
+    public Response update(@PathParam("id") int jobid, JobModel model) throws SQLException {
 
         System.out.println("Calling JobController.update");
         JobModel job = null;
         Response response = null;
         JobController jobController = new JobController();
 
-        setPreparedStatement("UPDATE jobs SET title=?, description=? WHERE jobid = ?");
-        preparedStatement.setString(1, model.getTitle());
-        preparedStatement.setString(2, model.getDescription());
-        preparedStatement.setLong(3, jobid);
+        setPreparedStatement("UPDATE jobs SET job_title=?, job_desc=? WHERE jobid = ?");
+        preparedStatement.setString(1, model.getJob_title());
+        preparedStatement.setString(2, model.getJob_desc());
+        preparedStatement.setInt(3, jobid);
         preparedStatement.executeUpdate();
 
         setCreateStatement();
@@ -150,7 +150,7 @@ public class JobController extends SuperController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long jobid) {
+    public Response delete(@PathParam("id") int jobid) {
         JsonObject json = null;
 
         try {

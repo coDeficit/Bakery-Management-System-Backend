@@ -122,6 +122,7 @@ public class UserController extends SuperController {
             preparedStatement.setString(1, login.getUsername());
             preparedStatement.setString(2, login.getPassword());
             ResultSet set = null;
+            
             set = preparedStatement.executeQuery();
 //            setCreateStatement();
                 System.out.println("Displaying resultSet: " + set);

@@ -8,32 +8,26 @@ import javax.json.JsonObject;
 
 public class JobModel extends SuperModel {
 
-    private long jobid;
-    private String title;
-    private String description;
-    private Timestamp createdat;
-    private Timestamp updatedat;
+    private int jobid;
+    private String job_title;
+    private String job_desc;
     public static final String sequence_id = "jobs_jobid_seq";
 
-    public JobModel(long jobid, String title, String description, Timestamp createdat, Timestamp updatedat) {
+    public JobModel(int jobid, String job_title, String job_desc) {
         this.jobid = jobid;
-        this.title = title;
-        this.description = description;
-        this.createdat = createdat;
-        this.updatedat = updatedat;
+        this.job_title = job_title;
+        this.job_desc = job_desc;
     }
 
-    public JobModel(String title, String description) {
-        this.title = title;
-        this.description = description;
+    public JobModel(String job_title, String job_desc) {
+        this.job_title = job_title;
+        this.job_desc = job_desc;
     }
 
     public JobModel(ResultSet set) throws Exception {
-        this.jobid = set.getLong("jobid");
-        this.title = set.getString("title");
-        this.description = set.getString("description");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
+        this.jobid = set.getInt("jobid");
+        this.job_title = set.getString("job_title");
+        this.job_desc = set.getString("job_desc");
     }
 
     @Override
@@ -42,10 +36,8 @@ public class JobModel extends SuperModel {
 
         json = Json.createObjectBuilder()
                 .add("jobid", jobid)
-                .add("title", title)
-                .add("description", description)
-                .add("createdat", createdat.toString())
-                .add("updatedat", updatedat.toString())
+                .add("job_title", job_title)
+                .add("job_desc", job_desc)
                 .build();
 
         return json;
@@ -54,54 +46,37 @@ public class JobModel extends SuperModel {
     public JobModel() {
     }
 
-    public long getJobid() {
+    public int getJobid() {
         return jobid;
     }
 
-    public void setJobid(long jobid) {
+    public void setJobid(int jobid) {
         this.jobid = jobid;
     }
 
-    public String getTitle() {
-        return title;
+    public String getJob_title() {
+        return job_title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setJob_title(String job_title) {
+        this.job_title = job_title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getJob_desc() {
+        return job_desc;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setJob_desc(String job_desc) {
+        this.job_desc = job_desc;
     }
 
-    public Timestamp getCreatedat() {
-        return createdat;
-    }
-
-    public void setCreatedat(Timestamp createdat) {
-        this.createdat = createdat;
-    }
-
-    public Timestamp getUpdateat() {
-        return updatedat;
-    }
-
-    public void setUpdatedat(Timestamp updatedat) {
-        this.updatedat = updatedat;
-    }
-
+    
     //debug database response
     @Override
     public String __response() {
         return ("jobid: " + jobid
-                + " title: " + title
-                + " description: " + description
-                + " createdat: " + createdat.toString()
-                + " updatedat: " + updatedat.toString());
+                + " job_title: " + job_title
+                + " job_desc: " + job_desc);
     }
 
 }

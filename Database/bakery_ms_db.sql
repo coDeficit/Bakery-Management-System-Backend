@@ -44,21 +44,19 @@ insert into org_name (org_name, phone, email, address1, city, country, timezone)
 drop table if exists jobs;
 create table jobs (
    jobid                serial                    not null,
-   title                varchar(254)              not null,
-   description          text                      default '',
-   createdat            timestamp                 default CURRENT_TIMESTAMP,
-   updatedat            timestamp                 default CURRENT_TIMESTAMP,
+   job_title            varchar(254)              not null default '',
+   job_desc             text                      default '',
    constraint pk_job primary key (jobid)
 );
 
-create unique index job_title on jobs (
-   title
+create unique index unq_job_title on jobs (
+   job_title
 );
 
 --
 -- Dumping data for table jobs
 --
-insert into jobs (title, description) values
+insert into jobs (job_title, job_desc) values
    ('Manager', 'Manages the day-in day-out activities of the Daily Bread Bakery'),
    ('IT Technician', 'Responsible for the technical aspects of the business and software');
 
@@ -70,7 +68,7 @@ insert into jobs (title, description) values
 drop table if exists employees CASCADE;
 create table employees (
    employeeid           serial               not null,
-   jobid                int4                 not null,
+   job                  int4                 not null,
    fullname             varchar(254)         not null,
    gender               char(1)              default '',
    phone                varchar(254)         not null,
@@ -97,10 +95,10 @@ create unique index emp_phone on employees (
 --
 -- Dumping data for table employees
 --
-insert into employees (jobid, fullname, gender, phone, email, address1, city, state, country, salary) values
+insert into employees (job, fullname, gender, phone, email, address1, city, state, country, salary) values
    (2,'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000);
 
-insert into employees (jobid, fullname, gender, phone, email, address1, city, state, country, salary) values
+insert into employees (job, fullname, gender, phone, email, address1, city, state, country, salary) values
    (2,'Jane Princess', 'F', '652119400', '', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 100000);
 
 
@@ -194,11 +192,9 @@ insert into shift_breaks(shiftid, breakid, starttime, endtime) values
 drop table if exists roles CASCADE;
 create table roles (
    roleid               serial               not null,
-   name                 varchar(254)         not null,
+   role_name            varchar(254)         not null,
    permissions          text                 default '',
-   description          text                 default '',
-   createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            default CURRENT_TIMESTAMP,
+   role_desc            text                 default ''
    constraint pk_role primary key (roleid)
 );
 
@@ -224,11 +220,11 @@ insert into roles (name, description) values
 drop table if exists users CASCADE;
 create table users (
    userid               serial               not null,
-   employeeid           int4                 not null,
-   roleid               int4                 not null,
+   employee             int4                 not null,
+   role                 int4                 not null,
    username             varchar(254)         not null,
    password             text                 not null,
-   state                boolean              default TRUE,
+   user_state           boolean              default FALSE,
    createdat            timestamp            default CURRENT_TIMESTAMP,
    updatedat            timestamp            default CURRENT_TIMESTAMP,
    constraint pk_user primary key (userid)
@@ -241,8 +237,8 @@ create unique index user_name on users (
 --
 -- Dumping data for table users
 --
-insert into users (employeeid, roleid, username, password) values
-  (1, 1, 'fondem', crypt('adminPass', gen_salt('bf', 8) ));
+insert into users (employee, role, username, password) values
+  (1, 1, 'fondem', 'adminPass');
 
 
 
@@ -479,7 +475,7 @@ alter table org_meta
 ---- Foreign Key structure for table employees
 --
 alter table employees
-   add constraint fk_employee_assoc_job foreign key (jobid)
+   add constraint fk_employee_assoc_job foreign key (job)
       references jobs (jobid)
       on delete CASCADE on update RESTRICT;
 
@@ -508,8 +504,13 @@ alter table shift_breaks
 ---- Foreign Key structure for table users
 --
 alter table users
-   add constraint fk_user_assoc_role foreign key (roleid)
+   add constraint fk_user_assoc_role foreign key (role)
       references roles (roleid)
+      on delete CASCADE on update RESTRICT;
+
+alter table users
+   add constraint fk_user_assoc_employee foreign key (employee)
+      references employees (employeeid)
       on delete CASCADE on update RESTRICT;
 
 
@@ -610,13 +611,6 @@ BEFORE UPDATE ON org_meta
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
----- Tigger structure for table jobs
---
-CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON jobs
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
 ---- Tigger structure for table employees
 --
 CREATE TRIGGER set_timestamp
@@ -637,14 +631,6 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 --
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON breaks
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
-
----- Tigger structure for table roles
---
-CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON roles
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
