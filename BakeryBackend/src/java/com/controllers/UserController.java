@@ -3,6 +3,10 @@ package com.controllers;
 import com.models.UserModel;
 import com.models.RoleModel;
 import com.models.EmployeeModel;
+import com.models.LoginModel;
+import com.models.MD5;
+import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -77,9 +81,54 @@ public class UserController extends SuperController {
             setCreateStatement();
             String query = getAllQuery + "WHERE u.userid = " + userid;
             resultSet = statement.executeQuery(query);
+                System.out.println("Displaying resultSet: " + resultSet);
 
             while (resultSet.next()) {
                 UserModel user = new UserModel(resultSet);
+                json = user.getJsonObject();
+            }
+
+            close();
+        } catch (Exception e) {
+            json = Json.createObjectBuilder().add("error", e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json.toString()).build();
+        }
+
+        if (json != null) {
+            return Response.status(Response.Status.OK).entity(json.toString()).build();
+        } else {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
+    }
+
+    // login an user and return json object
+    @POST
+    @Path("/login")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(LoginModel login) throws SQLException {
+
+        JsonObject json = null;
+        MD5 md5 = new MD5();
+
+        try {
+            String query = getAllQuery + "WHERE username = ? and password = ?";
+
+                System.out.println("Displaying username: " + login.getUsername());
+                System.out.println("Displaying password: " + login.getPassword());
+                System.out.println("Displaying password hashed: " + login.getPassword());
+                
+            setPreparedStatement(query);
+            preparedStatement.setString(1, login.getUsername());
+            preparedStatement.setString(2, login.getPassword());
+            ResultSet set = null;
+            set = preparedStatement.executeQuery();
+//            setCreateStatement();
+                System.out.println("Displaying resultSet: " + set);
+
+            while (set.next()) {
+                System.out.println("Displaying resultSet id: " + set.getLong("userid"));
+                UserModel user = new UserModel(set);
                 json = user.getJsonObject();
             }
 
@@ -100,13 +149,15 @@ public class UserController extends SuperController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(UserModel model) throws SQLException {
+    public Response create(UserModel model) throws SQLException, NoSuchAlgorithmException {
 
         Response response = null;
 
         String query = "insert into users (employeeid, roleid, username, password, "
-                + "state) values (?, ?, ?, crypt(?, gen_salt('bf', 8) ), ?)";
+                + "state) values (?, ?, ?, ?, ?)";
 
+        MD5 md5 = new MD5();
+        
         setPreparedStatement(query);
         preparedStatement.setLong(1, model.getEmployeeid());
         preparedStatement.setLong(2, model.getRoleid());
@@ -122,7 +173,7 @@ public class UserController extends SuperController {
             int userid = resultSet.getInt("last_value");
             response = getById(userid);
         }
-        
+
         resultSet.close();
         statement.close();
         preparedStatement.close();
@@ -135,14 +186,15 @@ public class UserController extends SuperController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long userid, UserModel model) throws SQLException {
+    public Response update(@PathParam("id") long userid, UserModel model) throws SQLException, NoSuchAlgorithmException {
 
+        MD5 md5 = new MD5();
         System.out.println("Calling userController.update");
         UserModel user = null;
         Response response = null;
 
         String query = "UPDATE users SET employeeid = ?, roleid = ?, username = ?, "
-                + "password = crypt(?, gen_salt('bf', 8) ), state = ? WHERE userid = ?";
+                + "password = ?, state = ? WHERE userid = ?";
 
         setPreparedStatement(query);
         preparedStatement.setLong(1, model.getEmployeeid());
@@ -158,7 +210,7 @@ public class UserController extends SuperController {
 
         while (resultSet.next()) {
             response = getById(userid);
-            
+
         }
 
         resultSet.close();
