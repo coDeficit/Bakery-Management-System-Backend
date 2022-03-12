@@ -8,37 +8,31 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 public class RoleModel extends SuperModel {
-    private long roleid;
-    private String name;
+    private int roleid;
+    private String role_name;
     private String permissions;
-    private String description;
-    private Timestamp createdat;
-    private Timestamp updatedat;
+    private String role_desc;
     public static final String sequence_id = "roles_roleid_seq";
 
-    public RoleModel(long roleid, String name, String permissions,
-            String description, Timestamp createdat, Timestamp updatedat) {
+    public RoleModel(int roleid, String role_name, String permissions,
+            String role_desc) {
         this.roleid = roleid;
-        this.name = name;
+        this.role_name = role_name;
         this.permissions = permissions;
-        this.description = description;
-        this.createdat = createdat;
-        this.updatedat = updatedat;
+        this.role_desc = role_desc;
     }
 
-    public RoleModel(String name, String permissions, String description) {
-        this.name = name;
+    public RoleModel(String role_name, String permissions, String role_desc) {
+        this.role_name = role_name;
         this.permissions = permissions;
-        this.description = description;
+        this.role_desc = role_desc;
     }
 
     public RoleModel(ResultSet set) throws Exception {
-        this.roleid = set.getLong("roleid");
-        this.name = set.getString("name");
+        this.roleid = set.getInt("roleid");
+        this.role_name = set.getString("role_name");
         this.permissions = set.getString("permissions");
-        this.description = set.getString("description");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
+        this.role_desc = set.getString("role_desc");
     }
 
     @Override
@@ -47,11 +41,9 @@ public class RoleModel extends SuperModel {
 
         json = Json.createObjectBuilder()
                 .add("roleid", roleid)
-                .add("name", name)
+                .add("role_name", role_name)
                 .add("permissions", permissions)
-                .add("description", description)
-                .add("createdat", createdat.toString())
-                .add("updatedat", updatedat.toString());
+                .add("role_desc", role_desc);
 
         return json.build();
     }
@@ -59,20 +51,20 @@ public class RoleModel extends SuperModel {
     public RoleModel() {
     }
 
-    public long getRoleid() {
+    public int getRoleid() {
         return roleid;
     }
 
-    public void setRoleid(long roleid) {
+    public void setRoleid(int roleid) {
         this.roleid = roleid;
     }
 
-    public String getName() {
-        return name;
+    public String getRole_name() {
+        return role_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRole_name(String role_name) {
+        this.role_name = role_name;
     }
 
     public String getPermissions() {
@@ -83,28 +75,21 @@ public class RoleModel extends SuperModel {
         this.permissions = permissions;
     }
 
-    public String getDescription() {
-        return description;
+    public String getRole_desc() {
+        return role_desc;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setRole_desc(String role_desc) {
+        this.role_desc = role_desc;
     }
 
-    public Timestamp getCreatedat() {
-        return createdat;
+    //debug database response
+    @Override
+    public String __response() {
+        return ("roleid: " + roleid
+                + " role_name: " + role_name
+                + " permissions: " + permissions
+                + " role_desc: " + role_desc);
     }
-
-    public void setCreatedat(Timestamp createdat) {
-        this.createdat = createdat;
-    }
-
-    public Timestamp getUpdatedat() {
-        return updatedat;
-    }
-
-    public void setUpdatedat(Timestamp updatedat) {
-        this.updatedat = updatedat;
-    }
-
+    
 }

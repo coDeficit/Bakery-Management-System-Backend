@@ -192,20 +192,20 @@ insert into shift_breaks(shiftid, breakid, starttime, endtime) values
 drop table if exists roles CASCADE;
 create table roles (
    roleid               serial               not null,
-   role_name            varchar(254)         not null,
+   role_name            varchar(254)         not null default '',
    permissions          text                 default '',
-   role_desc            text                 default ''
+   role_desc            text                 default '',
    constraint pk_role primary key (roleid)
 );
 
-create unique index role_name on roles (
-name
+create unique index unq_role_name on roles (
+   role_name
 );
 
 --
 -- Dumping data for table roles
 --
-insert into roles (name, description) values 
+insert into roles (role_name, role_desc) values 
    ('Administrator', 'Has all rights'),
    ('Manager', 'Manages all Transactions, prepares reports,...');
    --('Clerk', 'Performs daily cash handling, POS usage, stocking, handles inquiries and orders pertaining to the bakery', 1 ),

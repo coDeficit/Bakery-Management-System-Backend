@@ -68,7 +68,7 @@ public class RoleController extends SuperController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long roleid) {
+    public Response getById(@PathParam("id") int roleid) {
         JsonObject json = null;
 
         try {
@@ -102,10 +102,10 @@ public class RoleController extends SuperController {
 
         Response response = null;
 
-        setPreparedStatement("INSERT INTO roles (name, permissions, description) VALUES (?,?,?)");
-        preparedStatement.setString(1, model.getName());
+        setPreparedStatement("INSERT INTO roles (role_name, permissions, role_desc) VALUES (?,?,?)");
+        preparedStatement.setString(1, model.getRole_name());
         preparedStatement.setString(2, model.getPermissions());
-        preparedStatement.setString(3, model.getDescription());
+        preparedStatement.setString(3, model.getRole_desc());
         preparedStatement.executeUpdate();
         setCreateStatement();
 
@@ -127,19 +127,19 @@ public class RoleController extends SuperController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long roleid, RoleModel model) throws SQLException {
+    public Response update(@PathParam("id") int roleid, RoleModel model) throws SQLException {
 
         System.out.println("Calling RoleController.update");
         RoleModel role = null;
         Response response = null;
 
-        String query = "UPDATE roles SET name=?, permissions=?, "
-                + "description=? WHERE roleid = ?";
+        String query = "UPDATE roles SET role_name=?, permissions=?, "
+                + "role_desc=? WHERE roleid = ?";
         setPreparedStatement(query);
-        preparedStatement.setString(1, model.getName());
+        preparedStatement.setString(1, model.getRole_name());
         preparedStatement.setString(2, model.getPermissions());
-        preparedStatement.setString(3, model.getDescription());
-        preparedStatement.setLong(4, roleid);
+        preparedStatement.setString(3, model.getRole_desc());
+        preparedStatement.setInt(4, roleid);
         preparedStatement.executeUpdate();
 
         setCreateStatement();
@@ -160,7 +160,7 @@ public class RoleController extends SuperController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long roleid) {
+    public Response delete(@PathParam("id") int roleid) {
         JsonObject json = null;
 
         try {
