@@ -10,112 +10,112 @@ import javax.json.JsonObjectBuilder;
 
 public class EmployeeModel extends SuperModel {
     private JobModel jobModel = null;
-    private long employeeid;
-    private long jobid;
-    private String fullname;
-    private String gender;
-    private String phone;
-    private String email;
+    private int employeeid;
+    private int job;
+    private String emp_fullname;
+    private String emp_gender;
+    private String emp_phone;
+    private String emp_email;
     private String employ_type;
-    private String address1;
-    private String address2;
-    private String city;
-    private String state;
-    private String country;
-    private long salary;
-    private String image;
-    private String status;
-    private String notes;
-    private Timestamp createdat;
-    private Timestamp updatedat;
-    public static final String sequence_id = "employees_employeeid_seq";
+    private String emp_address1;
+    private String emp_address2;
+    private String emp_city;
+    private String emp_state;
+    private String emp_country;
+    private int emp_salary;
+    private String emp_image;
+    private String emp_status;
+    private String emp_notes;
+    private Timestamp emp_createdat;
+    private Timestamp emp_updatedat;
+    public static final String emp_sequence_id = "employees_employeeid_seq";
 
-    public EmployeeModel(long jobid, long emptypeid, String fullname, String gender,
-            String phone, String email, String employ_type, String address1, String address2, String city,
-            String state, String country, long salary, String image, String status, 
-            String notes, Timestamp createdat, Timestamp updatedat) {
+    public EmployeeModel(int job, int emptypeid, String emp_fullname, String emp_gender,
+            String emp_phone, String emp_email, String employ_type, String emp_address1, String emp_address2, String emp_city,
+            String emp_state, String emp_country, int emp_salary, String emp_image, String emp_status, 
+            String emp_notes, Timestamp emp_createdat, Timestamp emp_updatedat) {
         this.employeeid = employeeid;
-        this.jobid = jobid;
-        this.fullname = fullname;
-        this.gender = gender;
-        this.phone = phone;
-        this.email = email;
+        this.job = job;
+        this.emp_fullname = emp_fullname;
+        this.emp_gender = emp_gender;
+        this.emp_phone = emp_phone;
+        this.emp_email = emp_email;
         this.employ_type = employ_type;
-        this.address1 = address1;
-        this.address2 = address2;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.salary = salary;
-        this.image = image;
-        this.status = status;
-        this.notes = notes;
-        this.createdat = createdat;
-        this.updatedat = updatedat;
+        this.emp_address1 = emp_address1;
+        this.emp_address2 = emp_address2;
+        this.emp_city = emp_city;
+        this.emp_state = emp_state;
+        this.emp_country = emp_country;
+        this.emp_salary = emp_salary;
+        this.emp_image = emp_image;
+        this.emp_status = emp_status;
+        this.emp_notes = emp_notes;
+        this.emp_createdat = emp_createdat;
+        this.emp_updatedat = emp_updatedat;
     }
 
-    public EmployeeModel(long jobid, long emptypeid, String fullname, String gender,
-    String phone, String email, String employ_type, String address1, String address2, 
-    String city, String state, String country, long salary, String image, String status, 
-    String notes) {
-        this.jobid = jobid;
-        this.fullname = fullname;
-        this.gender = gender;
-        this.phone = phone;
-        this.email = email;
+    public EmployeeModel(int job, int emptypeid, String emp_emp_fullname, String emp_gender,
+    String emp_phone, String emp_email, String employ_type, String emp_address1, String emp_address2, 
+    String emp_city, String emp_state, String emp_country, int emp_salary, String emp_image, String emp_status, 
+    String emp_notes) {
+        this.job = job;
+        this.emp_fullname = emp_fullname;
+        this.emp_gender = emp_gender;
+        this.emp_phone = emp_phone;
+        this.emp_email = emp_email;
         this.employ_type = employ_type;
-        this.address1 = address1;
-        this.address2 = address2;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.salary = salary;
-        this.image = image;
-        this.status = status;
-        this.notes = notes;
+        this.emp_address1 = emp_address1;
+        this.emp_address2 = emp_address2;
+        this.emp_city = emp_city;
+        this.emp_state = emp_state;
+        this.emp_country = emp_country;
+        this.emp_salary = emp_salary;
+        this.emp_image = emp_image;
+        this.emp_status = emp_status;
+        this.emp_notes = emp_notes;
     }
 
     public EmployeeModel(ResultSet set) throws SQLException, Exception {
-        this.employeeid = set.getLong("employeeid");
-        this.jobid = set.getLong("jobid");
-        this.fullname = set.getString("fullname");
-        this.gender = set.getString("gender");
-        this.phone = set.getString("phone");
-        this.email = set.getString("email");
+        this.employeeid = set.getInt("employeeid");
+        this.job = set.getInt("job");
+        this.emp_fullname = set.getString("emp_fullname");
+        this.emp_gender = set.getString("emp_gender");
+        this.emp_phone = set.getString("emp_phone");
+        this.emp_email = set.getString("emp_email");
         this.employ_type = set.getString("employ_type");
-        this.address1 = set.getString("address1");
-        this.address2 = set.getString("address2");
-        this.city = set.getString("city");
-        this.state = set.getString("state");
-        this.country = set.getString("country");
-        this.salary = set.getLong("salary");
-        this.image = set.getString("image");
-        this.status = set.getString("status");
-        this.notes = set.getString("notes");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
+        this.emp_address1 = set.getString("emp_address1");
+        this.emp_address2 = set.getString("emp_address2");
+        this.emp_city = set.getString("emp_city");
+        this.emp_state = set.getString("emp_state");
+        this.emp_country = set.getString("emp_country");
+        this.emp_salary = set.getInt("emp_salary");
+        this.emp_image = set.getString("emp_image");
+        this.emp_status = set.getString("emp_status");
+        this.emp_notes = set.getString("emp_notes");
+        this.emp_createdat = set.getTimestamp("emp_createdat");
+        this.emp_updatedat = set.getTimestamp("emp_updatedat");
         this.jobModel = new JobModel(set);
     }
 
     public EmployeeModel(ResultSet set, boolean withJob) throws SQLException, Exception {
-        this.employeeid = set.getLong("employeeid");
-        this.jobid = set.getLong("jobid");
-        this.fullname = set.getString("fullname");
-        this.gender = set.getString("gender");
-        this.phone = set.getString("phone");
-        this.email = set.getString("email");
+        this.employeeid = set.getInt("employeeid");
+        this.job = set.getInt("job");
+        this.emp_fullname = set.getString("emp_fullname");
+        this.emp_gender = set.getString("emp_gender");
+        this.emp_phone = set.getString("emp_phone");
+        this.emp_email = set.getString("emp_email");
         this.employ_type = set.getString("employ_type");
-        this.address1 = set.getString("address1");
-        this.address2 = set.getString("address2");
-        this.city = set.getString("city");
-        this.state = set.getString("state");
-        this.country = set.getString("country");
-        this.salary = set.getLong("salary");
-        this.image = set.getString("image");
-        this.status = set.getString("status");
-        this.notes = set.getString("notes");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
+        this.emp_address1 = set.getString("emp_address1");
+        this.emp_address2 = set.getString("emp_address2");
+        this.emp_city = set.getString("emp_city");
+        this.emp_state = set.getString("emp_state");
+        this.emp_country = set.getString("emp_country");
+        this.emp_salary = set.getInt("emp_salary");
+        this.emp_image = set.getString("emp_image");
+        this.emp_status = set.getString("emp_status");
+        this.emp_notes = set.getString("emp_notes");
+        this.emp_createdat = set.getTimestamp("emp_createdat");
+        this.emp_updatedat = set.getTimestamp("emp_updatedat");
 
         if (withJob) {
             this.jobModel = new JobModel(set);
@@ -131,29 +131,109 @@ public class EmployeeModel extends SuperModel {
 
         json = Json.createObjectBuilder()
                 .add("employeeid", employeeid)
-                .add("jobid", jobid)
-                .add("fullname", fullname)
-                .add("gender", gender)
-                .add("phone", phone)
-                .add("email", email)
+                .add("job", job)
+                .add("emp_fullname", emp_fullname)
+                .add("emp_gender", emp_gender)
+                .add("emp_phone", emp_phone)
+                .add("emp_email", emp_email)
                 .add("employ_type", employ_type)
-                .add("address1", address1)
-                .add("address2", address2)
-                .add("city", city)
-                .add("state", state)
-                .add("country", country)
-                .add("salary", salary)
-                .add("image", image)
-                .add("status", status)
-                .add("notes", notes)
-                .add("createdat", createdat.toString())
-                .add("updatedat", updatedat.toString());
+                .add("emp_address1", emp_address1)
+                .add("emp_address2", emp_address2)
+                .add("emp_city", emp_city)
+                .add("emp_state", emp_state)
+                .add("emp_country", emp_country)
+                .add("emp_salary", emp_salary)
+                .add("emp_image", emp_image)
+                .add("emp_status", emp_status)
+                .add("emp_notes", emp_notes)
+                .add("emp_createdat", emp_createdat.toString())
+                .add("emp_updatedat", emp_updatedat.toString());
 
         if (jobModel != null) {
             json.add("job_details", jobModel.getJsonObject());
         }
 
         return json.build();
+    }
+
+    public String getEmp_fullname() {
+        return emp_fullname;
+    }
+
+    public void setEmp_fullname(String emp_fullname) {
+        this.emp_fullname = emp_fullname;
+    }
+
+    public String getEmp_gender() {
+        return emp_gender;
+    }
+
+    public void setEmp_gender(String emp_gender) {
+        this.emp_gender = emp_gender;
+    }
+
+    public String getEmp_email() {
+        return emp_email;
+    }
+
+    public void setEmp_email(String emp_email) {
+        this.emp_email = emp_email;
+    }
+
+    public String getEmp_address1() {
+        return emp_address1;
+    }
+
+    public void setEmp_address1(String emp_address1) {
+        this.emp_address1 = emp_address1;
+    }
+
+    public String getEmp_address2() {
+        return emp_address2;
+    }
+
+    public void setEmp_address2(String emp_address2) {
+        this.emp_address2 = emp_address2;
+    }
+
+    public String getEmp_city() {
+        return emp_city;
+    }
+
+    public void setEmp_city(String emp_city) {
+        this.emp_city = emp_city;
+    }
+
+    public String getEmp_country() {
+        return emp_country;
+    }
+
+    public void setEmp_country(String emp_country) {
+        this.emp_country = emp_country;
+    }
+
+    public String getEmp_image() {
+        return emp_image;
+    }
+
+    public void setEmp_image(String emp_image) {
+        this.emp_image = emp_image;
+    }
+
+    public String getEmp_notes() {
+        return emp_notes;
+    }
+
+    public void setEmp_notes(String emp_notes) {
+        this.emp_notes = emp_notes;
+    }
+
+    public Timestamp getEmp_createdat() {
+        return emp_createdat;
+    }
+
+    public void setEmp_createdat(Timestamp emp_createdat) {
+        this.emp_createdat = emp_createdat;
     }
 
     public JobModel getJobModel() {
@@ -164,139 +244,28 @@ public class EmployeeModel extends SuperModel {
         this.jobModel = jobModel;
     }
 
-    public long getEmployeeid() {
+    public int getEmployeeid() {
         return employeeid;
     }
 
-    public void setEmployeeid(long employeeid) {
+    public void setEmployeeid(int employeeid) {
         this.employeeid = employeeid;
     }
 
-    public long getJobid() {
-        return jobid;
+    public int getJob() {
+        return job;
     }
 
-    public void setJobid(long jobid) {
-        this.jobid = jobid;
+    public void setJob(int job) {
+        this.job = job;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getEmp_phone() {
+        return emp_phone;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress1() {
-        return address1;
-    }
-
-    public void setAddress1(String address1) {
-        this.address1 = address1;
-    }
-
-    public String getAddress2() {
-        return address2;
-    }
-
-    public void setAddress2(String address2) {
-        this.address2 = address2;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public long getSalary() {
-        return salary;
-    }
-
-    public void setSalary(long salary) {
-        this.salary = salary;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-    public Timestamp getCreatedat() {
-        return createdat;
-    }
-
-    public void setCreatedat(Timestamp createdat) {
-        this.createdat = createdat;
-    }
-
-    public Timestamp getUpdatedat() {
-        return updatedat;
-    }
-
-    public void setUpdatedat(Timestamp updatedat) {
-        this.updatedat = updatedat;
+    public void setEmp_phone(String emp_phone) {
+        this.emp_phone = emp_phone;
     }
 
     public String getEmploy_type() {
@@ -307,4 +276,37 @@ public class EmployeeModel extends SuperModel {
         this.employ_type = employ_type;
     }
 
+    public String getEmp_state() {
+        return emp_state;
+    }
+
+    public void setEmp_state(String emp_state) {
+        this.emp_state = emp_state;
+    }
+
+    public int getEmp_salary() {
+        return emp_salary;
+    }
+
+    public void setEmp_salary(int emp_salary) {
+        this.emp_salary = emp_salary;
+    }
+
+    public String getEmp_status() {
+        return emp_status;
+    }
+
+    public void setEmp_status(String emp_status) {
+        this.emp_status = emp_status;
+    }
+
+    public Timestamp getEmp_updatedat() {
+        return emp_updatedat;
+    }
+
+    public void setEmp_updatedat(Timestamp emp_updatedat) {
+        this.emp_updatedat = emp_updatedat;
+    }
+
+    
 }

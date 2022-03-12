@@ -26,8 +26,8 @@ import javax.ws.rs.core.Response;
 public class UserController extends SuperController {
 
     String getAllQuery = "SELECT u.*, e.*, r.* FROM users u "
-            + "LEFT JOIN employees e USING (employeeid) "
-            + "LEFT JOIN roles r USING (roleid) ";
+            + "LEFT JOIN employees e ON e.employeeid = u.employee "
+            + "LEFT JOIN roles r ON r.roleid = u.role ";
 
     public UserController() {
     }
@@ -74,7 +74,7 @@ public class UserController extends SuperController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long userid) {
+    public Response getById(@PathParam("id") int userid) {
         JsonObject json = null;
 
         try {
@@ -154,21 +154,21 @@ public class UserController extends SuperController {
 
         Response response = null;
 
-        String query = "insert into users (employeeid, roleid, username, password, "
-                + "state) values (?, ?, ?, ?, ?)";
+        String query = "insert into users (employee, role, username, password, "
+                + "user_state) values (?, ?, ?, ?, ?)";
 
         MD5 md5 = new MD5();
         
         setPreparedStatement(query);
-        preparedStatement.setLong(1, model.getEmployeeid());
-        preparedStatement.setLong(2, model.getRoleid());
+        preparedStatement.setInt(1, model.getEmployee());
+        preparedStatement.setInt(2, model.getRole());
         preparedStatement.setString(3, model.getUsername());
         preparedStatement.setString(4, model.getPassword());
-        preparedStatement.setBoolean(5, model.isState());
+        preparedStatement.setBoolean(5, model.isUser_state());
         preparedStatement.executeUpdate();
         setCreateStatement();
 
-        resultSet = statement.executeQuery("SELECT last_value FROM " + UserModel.sequence_id);
+        resultSet = statement.executeQuery("SELECT last_value FROM " + UserModel.user_sequence_id);
 
         while (resultSet.next()) {
             int userid = resultSet.getInt("last_value");
@@ -187,22 +187,22 @@ public class UserController extends SuperController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long userid, UserModel model) throws SQLException, NoSuchAlgorithmException {
+    public Response update(@PathParam("id") int userid, UserModel model) throws SQLException, NoSuchAlgorithmException {
 
         MD5 md5 = new MD5();
         System.out.println("Calling userController.update");
         UserModel user = null;
         Response response = null;
 
-        String query = "UPDATE users SET employeeid = ?, roleid = ?, username = ?, "
-                + "password = ?, state = ? WHERE userid = ?";
+        String query = "UPDATE users SET employee = ?, role = ?, username = ?, "
+                + "password = ?, user_state = ? WHERE userid = ?";
 
         setPreparedStatement(query);
-        preparedStatement.setLong(1, model.getEmployeeid());
-        preparedStatement.setLong(2, model.getRoleid());
+        preparedStatement.setInt(1, model.getEmployee());
+        preparedStatement.setInt(2, model.getRole());
         preparedStatement.setString(3, model.getUsername());
         preparedStatement.setString(4, model.getPassword());
-        preparedStatement.setBoolean(5, model.isState());
+        preparedStatement.setBoolean(5, model.isUser_state());
         preparedStatement.setLong(6, userid);
         preparedStatement.executeUpdate();
 
@@ -225,7 +225,7 @@ public class UserController extends SuperController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long userid) {
+    public Response delete(@PathParam("id") int userid) {
         JsonObject json = null;
 
         try {

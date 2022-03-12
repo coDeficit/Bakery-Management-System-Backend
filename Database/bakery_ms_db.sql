@@ -69,37 +69,35 @@ drop table if exists employees CASCADE;
 create table employees (
    employeeid           serial               not null,
    job                  int4                 not null,
-   fullname             varchar(254)         not null,
-   gender               char(1)              default '',
-   phone                varchar(254)         not null,
-   email                varchar(254)         default '',
+   emp_fullname         varchar(254)         not null default '',
+   emp_gender           char(1)              default '',
+   emp_phone            varchar(254)         not null default '',
+   emp_email            varchar(254)         default '',
    employ_type          varchar(254)         default '',
-   address1             varchar(254)         not null,
-   address2             varchar(254)         default '',
-   city                 varchar(254)         not null,
-   state                varchar(254)         default '',
-   country              varchar(254)         not null,
-   salary               numeric(10, 0)       default 0,
-   image                varchar(254)         default '',
-   status               varchar(254)         default 'Current',
-   notes                text                 default '',
-   createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            default CURRENT_TIMESTAMP,
+   emp_address1         varchar(254)         not null default '',
+   emp_address2         varchar(254)         default '',
+   emp_city             varchar(254)         not null default '',
+   emp_state            varchar(254)         default '',
+   emp_country          varchar(254)         not null default '',
+   emp_salary           numeric(10, 0)       default 0,
+   emp_image            varchar(254)         default '',
+   emp_status           varchar(254)         default 'Current',
+   emp_notes            text                 default '',
+   emp_createdat        timestamp            default CURRENT_TIMESTAMP,
+   emp_updatedat        timestamp            default CURRENT_TIMESTAMP,
    constraint pk_employee primary key (employeeid)
 );
 
-create unique index emp_phone on employees (
-   phone
+create unique index unq_emp_phone on employees (
+   emp_phone
 );
 
 --
 -- Dumping data for table employees
 --
-insert into employees (job, fullname, gender, phone, email, address1, city, state, country, salary) values
+insert into employees (job, emp_fullname, emp_gender, emp_phone, emp_email, emp_address1, emp_city, emp_state, emp_country, emp_salary) values
    (2,'Fondem Princess', 'F', '652119430', 'fondempnkeng@gmail.com', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 500000);
 
-insert into employees (job, fullname, gender, phone, email, address1, city, state, country, salary) values
-   (2,'Jane Princess', 'F', '652119400', '', 'Awae Escalier', 'Yaounde', 'Centre', 'Cameroon', 100000);
 
 
 
@@ -222,11 +220,11 @@ create table users (
    userid               serial               not null,
    employee             int4                 not null,
    role                 int4                 not null,
-   username             varchar(254)         not null,
-   password             text                 not null,
+   username             varchar(254)         not null default '',
+   password             text                 not null default '',
    user_state           boolean              default FALSE,
-   createdat            timestamp            default CURRENT_TIMESTAMP,
-   updatedat            timestamp            default CURRENT_TIMESTAMP,
+   user_createdat       timestamp            default CURRENT_TIMESTAMP,
+   user_updatedat       timestamp            default CURRENT_TIMESTAMP,
    constraint pk_user primary key (userid)
 );
 
@@ -613,6 +611,15 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 ---- Tigger structure for table employees
 --
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.emp_updatedat = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON employees
 FOR EACH ROW
@@ -637,6 +644,14 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 ---- Tigger structure for table users
 --
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.user_updatedat = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON users
 FOR EACH ROW

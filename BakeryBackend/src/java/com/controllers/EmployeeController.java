@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 public class EmployeeController extends SuperController {
 
     String getAllQuery = "SELECT e.*, j.* FROM employees e "
-            + "INNER JOIN jobs j USING (jobid) ";
+            + "INNER JOIN jobs j ON j.jobid = e.job ";
 
     public EmployeeController() {
     }
@@ -70,7 +70,7 @@ public class EmployeeController extends SuperController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long employeeid) {
+    public Response getById(@PathParam("id") int employeeid) {
         JsonObject json = null;
 
         try {
@@ -104,30 +104,30 @@ public class EmployeeController extends SuperController {
 
         Response response = null;
         
-        String query = "insert into employees (jobid, fullname, gender, phone, email, employ_type, "
-                + "address1, address2, city, state, country, salary, image, status, notes) "
+        String query = "insert into employees (job, emp_fullname, emp_gender, emp_phone, emp_email, employ_type, "
+                + "emp_address1, emp_address2, emp_city, emp_state, emp_country, emp_salary, emp_image, emp_status, emp_notes) "
                 + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         setPreparedStatement(query);
-        preparedStatement.setLong(1, model.getJobid());
-        preparedStatement.setString(2, model.getFullname());
-        preparedStatement.setString(3, model.getGender());
-        preparedStatement.setString(4, model.getPhone());
-        preparedStatement.setString(5, model.getEmail());
+        preparedStatement.setInt(1, model.getJob());
+        preparedStatement.setString(2, model.getEmp_fullname());
+        preparedStatement.setString(3, model.getEmp_gender());
+        preparedStatement.setString(4, model.getEmp_phone());
+        preparedStatement.setString(5, model.getEmp_email());
         preparedStatement.setString(6, model.getEmploy_type());
-        preparedStatement.setString(7, model.getAddress1());
-        preparedStatement.setString(8, model.getAddress2());
-        preparedStatement.setString(9, model.getCity());
-        preparedStatement.setString(10, model.getState());
-        preparedStatement.setString(11, model.getCountry());
-        preparedStatement.setLong(12, model.getSalary());
-        preparedStatement.setString(13, model.getImage());
-        preparedStatement.setString(14, model.getStatus());
-        preparedStatement.setString(15, model.getNotes());
+        preparedStatement.setString(7, model.getEmp_address1());
+        preparedStatement.setString(8, model.getEmp_address2());
+        preparedStatement.setString(9, model.getEmp_city());
+        preparedStatement.setString(10, model.getEmp_state());
+        preparedStatement.setString(11, model.getEmp_country());
+        preparedStatement.setInt(12, model.getEmp_salary());
+        preparedStatement.setString(13, model.getEmp_image());
+        preparedStatement.setString(14, model.getEmp_status());
+        preparedStatement.setString(15, model.getEmp_notes());
         preparedStatement.executeUpdate();
         setCreateStatement();
 
-        resultSet = statement.executeQuery("SELECT last_value FROM " + EmployeeModel.sequence_id);
+        resultSet = statement.executeQuery("SELECT last_value FROM " + EmployeeModel.emp_sequence_id);
         
 
         while (resultSet.next()) {
@@ -147,35 +147,35 @@ public class EmployeeController extends SuperController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long employeeid, EmployeeModel model) throws SQLException {
+    public Response update(@PathParam("id") int employeeid, EmployeeModel model) throws SQLException {
 
         System.out.println("Calling employeeController.update");
         EmployeeModel employee = null;
         Response response = null;
         EmployeeController employeeController = new EmployeeController();
 
-        String query = "UPDATE employees SET jobid = ?, fullname = ?, gender = ?, "
-                + "phone = ?, email = ?, employ_type = ?, address1 = ?, address2 = ?, "
-                + "city = ?, state = ?, country = ?, salary = ?, image = ?, "
-                + "status = ?, notes = ? WHERE employeeid = ?";
+        String query = "UPDATE employees SET job = ?, emp_fullname = ?, emp_gender = ?, emp_"
+                + "phone = ?, emp_email = ?, employ_type = ?, emp_address1 = ?, emp_address2 = ?, emp_"
+                + "city = ?, emp_state = ?, emp_country = ?, emp_salary = ?, emp_image = ?, emp_"
+                + "status = ?, emp_notes = ? WHERE employeeid = ?";
 
         setPreparedStatement(query);
 
-        preparedStatement.setLong(1, model.getJobid());
-        preparedStatement.setString(2, model.getFullname());
-        preparedStatement.setString(3, model.getGender());
-        preparedStatement.setString(4, model.getPhone());
-        preparedStatement.setString(5, model.getEmail());
+        preparedStatement.setInt(1, model.getJob());
+        preparedStatement.setString(2, model.getEmp_fullname());
+        preparedStatement.setString(3, model.getEmp_gender());
+        preparedStatement.setString(4, model.getEmp_phone());
+        preparedStatement.setString(5, model.getEmp_email());
         preparedStatement.setString(6, model.getEmploy_type());
-        preparedStatement.setString(7, model.getAddress1());
-        preparedStatement.setString(8, model.getAddress2());
-        preparedStatement.setString(9, model.getCity());
-        preparedStatement.setString(10, model.getState());
-        preparedStatement.setString(11, model.getCountry());
-        preparedStatement.setLong(12, model.getSalary());
-        preparedStatement.setString(13, model.getImage());
-        preparedStatement.setString(14, model.getStatus());
-        preparedStatement.setString(15, model.getNotes());
+        preparedStatement.setString(7, model.getEmp_address1());
+        preparedStatement.setString(8, model.getEmp_address2());
+        preparedStatement.setString(9, model.getEmp_city());
+        preparedStatement.setString(10, model.getEmp_state());
+        preparedStatement.setString(11, model.getEmp_country());
+        preparedStatement.setInt(12, model.getEmp_salary());
+        preparedStatement.setString(13, model.getEmp_image());
+        preparedStatement.setString(14, model.getEmp_status());
+        preparedStatement.setString(15, model.getEmp_notes());
         preparedStatement.setLong(16, employeeid);
         preparedStatement.executeUpdate();
 
@@ -197,7 +197,7 @@ public class EmployeeController extends SuperController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") long employeeid) {
+    public Response delete(@PathParam("id") int employeeid) {
         JsonObject json = null;
 
         try {

@@ -12,59 +12,59 @@ public class UserModel extends SuperModel {
 
     private EmployeeModel employeeModel = null;
     private RoleModel roleModel = null;
-    private long userid;
-    private long employeeid;
-    private long roleid;
+    private int userid;
+    private int employee;
+    private int role;
     private String username;
     private String password;
-    private boolean state;
-    private Timestamp createdat;
-    private Timestamp updatedat;
-    public static final String sequence_id = "users_userid_seq";
+    private boolean user_state;
+    private Timestamp user_createdat;
+    private Timestamp user_updatedat;
+    public static final String user_sequence_id = "users_userid_seq";
 
-    public UserModel(long employeeid, long roleid, String username, String password, boolean state, Timestamp createdat, Timestamp updatedat) {
-        this.employeeid = employeeid;
-        this.roleid = roleid;
+    public UserModel(int employee, int role, String username, String password, boolean user_state, Timestamp user_createdat, Timestamp user_updatedat) {
+        this.employee = employee;
+        this.role = role;
         this.username = username;
         this.password = password;
-        this.state = state;
-        this.createdat = createdat;
-        this.updatedat = updatedat;
+        this.user_state = user_state;
+        this.user_createdat = user_createdat;
+        this.user_updatedat = user_updatedat;
     }
 
-    public UserModel(long userid, long employeeid, long roleid, String username, String password, boolean state, Timestamp createdat, Timestamp updatedat) {
+    public UserModel(int userid, int employee, int role, String username, String password, boolean user_state, Timestamp user_createdat, Timestamp user_updatedat) {
         this.userid = userid;
-        this.employeeid = employeeid;
-        this.roleid = roleid;
+        this.employee = employee;
+        this.role = role;
         this.username = username;
         this.password = password;
-        this.state = state;
-        this.createdat = createdat;
-        this.updatedat = updatedat;
+        this.user_state = user_state;
+        this.user_createdat = user_createdat;
+        this.user_updatedat = user_updatedat;
     }
 
     public UserModel(ResultSet set) throws SQLException, Exception {
-        this.userid = set.getLong("userid");
-        this.employeeid = set.getLong("employeeid");
-        this.roleid = set.getLong("roleid");
+        this.userid = set.getInt("userid");
+        this.employee = set.getInt("employee");
+        this.role = set.getInt("role");
         this.username = set.getString("username");
         this.password = set.getString("password");
-        this.state = set.getBoolean("state");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
+        this.user_state = set.getBoolean("user_state");
+        this.user_createdat = set.getTimestamp("user_createdat");
+        this.user_updatedat = set.getTimestamp("user_updatedat");
         this.employeeModel = new EmployeeModel(set, false);
         this.roleModel = new RoleModel(set);
     }
 
     public UserModel(ResultSet set, boolean withEmp) throws SQLException, Exception {
-        this.userid = set.getLong("userid");
-        this.employeeid = set.getLong("employeeid");
-        this.roleid = set.getLong("roleid");
+        this.userid = set.getInt("userid");
+        this.employee = set.getInt("employee");
+        this.role = set.getInt("role");
         this.username = set.getString("username");
         this.password = set.getString("password");
-        this.state = set.getBoolean("state");
-        this.createdat = set.getTimestamp("createdat");
-        this.updatedat = set.getTimestamp("updatedat");
+        this.user_state = set.getBoolean("user_state");
+        this.user_createdat = set.getTimestamp("user_createdat");
+        this.user_updatedat = set.getTimestamp("user_updatedat");
         this.roleModel = new RoleModel(set);
 
         if (withEmp) {
@@ -81,13 +81,13 @@ public class UserModel extends SuperModel {
 
         json = Json.createObjectBuilder()
                 .add("userid", userid)
-                .add("employeeid", employeeid)
-                .add("roleid", roleid)
+                .add("employee", employee)
+                .add("role", role)
                 .add("username", username)
                 .add("password", password)
-                .add("state", state)
-                .add("createdat", createdat.toString())
-                .add("updatedat", updatedat.toString());
+                .add("user_state", user_state)
+                .add("user_createdat", user_createdat.toString())
+                .add("user_updatedat", user_updatedat.toString());
 
                 if (employeeModel != null) {
                     json.add("employee_details", employeeModel.getJsonObject());
@@ -113,28 +113,28 @@ public class UserModel extends SuperModel {
         this.roleModel = roleModel;
     }
 
-    public long getUserid() {
+    public int getUserid() {
         return userid;
     }
 
-    public void setUserid(long userid) {
+    public void setUserid(int userid) {
         this.userid = userid;
     }
 
-    public long getEmployeeid() {
-        return employeeid;
+    public int getEmployee() {
+        return employee;
     }
 
-    public void setEmployeeid(long employeeid) {
-        this.employeeid = employeeid;
+    public void setEmployee(int employee) {
+        this.employee = employee;
     }
 
-    public long getRoleid() {
-        return roleid;
+    public int getRole() {
+        return role;
     }
 
-    public void setRoleid(long roleid) {
-        this.roleid = roleid;
+    public void setRole(int role) {
+        this.role = role;
     }
 
     public String getUsername() {
@@ -153,28 +153,29 @@ public class UserModel extends SuperModel {
         this.password = password;
     }
 
-    public boolean isState() {
-        return state;
+    public boolean isUser_state() {
+        return user_state;
     }
 
-    public void setState(boolean state) {
-        this.state = state;
+    public void setUser_state(boolean user_state) {
+        this.user_state = user_state;
     }
 
-    public Timestamp getCreatedat() {
-        return createdat;
+    public Timestamp getUser_createdat() {
+        return user_createdat;
     }
 
-    public void setCreatedat(Timestamp createdat) {
-        this.createdat = createdat;
+    public void setUser_createdat(Timestamp user_createdat) {
+        this.user_createdat = user_createdat;
     }
 
-    public Timestamp getUpdatedat() {
-        return updatedat;
+    public Timestamp getUser_updatedat() {
+        return user_updatedat;
     }
 
-    public void setUpdatedat(Timestamp updatedat) {
-        this.updatedat = updatedat;
+    public void setUser_updatedat(Timestamp user_updatedat) {
+        this.user_updatedat = user_updatedat;
     }
 
+    
 }
